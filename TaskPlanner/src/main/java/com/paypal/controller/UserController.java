@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.paypal.dto.LoginUserDto;
 import com.paypal.dto.RegisterUserDto;
 import com.paypal.model.User;
 import com.paypal.service.UserService;
@@ -23,5 +24,11 @@ public class UserController {
 	public ResponseEntity<User> registerAnUser(@RequestBody RegisterUserDto dto){
 		User registeredUser = uservice.registerAnUser(dto);
 		return new ResponseEntity<User>(registeredUser, HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/login")
+	public ResponseEntity<User> loginUser(@RequestBody LoginUserDto dto){
+		User existingUser = uservice.loginUser(dto);
+		return new ResponseEntity<User>(existingUser, HttpStatus.ACCEPTED);
 	}
 }

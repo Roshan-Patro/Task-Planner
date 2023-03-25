@@ -1,6 +1,6 @@
 package com.paypal.model;
 
-import java.time.LocalDateTime;
+import java.time.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paypal.enums.Priority;
@@ -32,15 +32,17 @@ public class Task {
 
 	private Integer createrId;
 
-	private LocalDateTime startDate;
+	private LocalDate startDate;
 
-	private LocalDateTime endDate;
+	private LocalDate endDate;
 
 	@Enumerated(EnumType.STRING)
 	private Type type;
 
+	@Enumerated(EnumType.STRING)
 	private Priority priority;
 
+	@Enumerated(EnumType.STRING)
 	private Status status;
 
 	@JsonIgnore
