@@ -1,6 +1,6 @@
 package com.paypal.model;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,7 +28,7 @@ public class Sprint {
 
 	private String sprintDesc;
 
-	private LocalDateTime createdAt;
+	private LocalDate createdOn;
 
 	@JsonIgnore
 	@ManyToOne // Bidirectional
