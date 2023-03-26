@@ -1,5 +1,6 @@
 package com.paypal.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.paypal.dto.LoginUserDto;
 import com.paypal.dto.RegisterUserDto;
+import com.paypal.exception.TaskException;
 import com.paypal.exception.UserException;
+import com.paypal.model.Task;
 import com.paypal.model.User;
 import com.paypal.repository.SprintRepository;
 import com.paypal.repository.TaskRepository;
@@ -58,5 +61,21 @@ public class UserServiceImpl implements UserService {
 			throw new UserException("Incorrect password for the email id: "+dto.getEmail()+". Please try again with the correct one.");
 		}
 		throw new UserException("The email id: "+dto.getEmail()+" is not a registered email id.");
+	}
+
+	@Override
+	public List<Task> getAssignedTasks(Integer userId) throws UserException, TaskException {
+		Optional<User> userOpt = urepo.findById(userId);
+		
+		if(userOpt.isPresent()) {
+			User existingUser = userOpt.get();
+			List<Task> assignedTasks = existingUser.getAssignedTasks();
+			
+			if(!assignedTasks.isEmpty()) {
+				return assignedTasks;
+			}
+			throw new TaskException("No assigned task yet with user: "+existingUser.getUserName()+" (Id: "+userId+")");
+		}
+		throw new UserException("No user with id: "+userId+" found in system...!");
 	}
 }
