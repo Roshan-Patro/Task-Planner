@@ -51,4 +51,28 @@ public class TaskServiceImpl implements TaskService {
 				+ " found in the system. Please, try with a different creater id.");
 
 	}
+
+	@Override
+	public User assignTaskToUser(Integer taskId, Integer userId) throws TaskException, UserException {
+		Optional<Task> taskOpt = trepo.findById(taskId);
+		
+		if(taskOpt.isPresent()) {
+			Task existingTask = taskOpt.get();
+			
+			Optional<User> userOpt = urepo.findById(userId);
+			if(userOpt.isPresent()) {
+				User existingUser = userOpt.get();
+				
+				existingTask.setAssignee(existingUser);
+				
+				existingUser.getAssignedTasks().add(existingTask);
+				
+				User updatedUser = urepo.save(existingUser);
+				
+				return updatedUser;
+			}
+			throw new UserException("No user found with id: "+userId);
+		}
+		throw new TaskException("No task found with id: "+taskId);
+	}
 }
