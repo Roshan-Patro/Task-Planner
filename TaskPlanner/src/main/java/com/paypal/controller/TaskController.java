@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.paypal.dto.CreateTaskDto;
+import com.paypal.model.Sprint;
 import com.paypal.model.Task;
 import com.paypal.model.User;
 import com.paypal.service.TaskService;
@@ -38,5 +39,11 @@ public class TaskController {
 	public ResponseEntity<User> changeAssignee(@PathVariable("taskId") Integer taskId, @PathVariable("userId") Integer userId){
 		User assignedUser = tservice.changeAssignee(taskId,userId);
 		return new ResponseEntity<User>(assignedUser, HttpStatus.OK);
+	}
+	
+	@PutMapping("/changesprint/{taskId}/{sprintId}")
+	public ResponseEntity<Sprint> changeSprint(@PathVariable("taskId") Integer taskId, @PathVariable("sprintId") Integer sprintId){
+		Sprint addedSprint = tservice.changeSprint(taskId,sprintId);
+		return new ResponseEntity<Sprint>(addedSprint, HttpStatus.OK);
 	}
 }

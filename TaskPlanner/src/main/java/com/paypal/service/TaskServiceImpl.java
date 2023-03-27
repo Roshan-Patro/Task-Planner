@@ -11,8 +11,10 @@ import com.paypal.dto.CreateTaskDto;
 import com.paypal.enums.Priority;
 import com.paypal.enums.Status;
 import com.paypal.enums.Type;
+import com.paypal.exception.SprintException;
 import com.paypal.exception.TaskException;
 import com.paypal.exception.UserException;
+import com.paypal.model.Sprint;
 import com.paypal.model.Task;
 import com.paypal.model.User;
 import com.paypal.repository.SprintRepository;
@@ -111,6 +113,44 @@ public class TaskServiceImpl implements TaskService {
 				return updatedUser;
 			}
 			throw new UserException("No user found with id: " + userId);
+		}
+		throw new TaskException("No task found with id: " + taskId);
+	}
+
+	@Override
+	public Sprint changeSprint(Integer taskId, Integer sprintId) throws TaskException, SprintException {
+		Optional<Task> taskOpt = trepo.findById(taskId);
+
+		if (taskOpt.isPresent()) {
+			Task existingTask = taskOpt.get();
+
+			Optional<Sprint> sprintOpt = srepo.findById(sprintId);
+			if (sprintOpt.isPresent()) {
+				
+				if(sprintId==existingTask.getSprint().getSprintId()) {
+					throw new TaskException("Task is already added to the sprint: "+sprintId);
+				}
+				
+				Sprint existingSprint = sprintOpt.get();
+
+				Sprint previousSprint = existingTask.getSprint();
+				
+				if (previousSprint != null) {
+					List<Task> currentTasks = previousSprint.getTaskList();
+					currentTasks.removeIf(obj -> obj.getTaskId()==taskId);
+					previousSprint.setTaskList(currentTasks);
+					srepo.save(previousSprint);
+				}
+
+				existingTask.setSprint(existingSprint);
+
+				existingSprint.getTaskList().add(existingTask);
+
+				Sprint updatedSprint = srepo.save(existingSprint);
+				
+				return updatedSprint;
+			}
+			throw new SprintException("No sprint found with id: " + sprintId);
 		}
 		throw new TaskException("No task found with id: " + taskId);
 	}
