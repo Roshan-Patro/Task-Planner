@@ -16,4 +16,6 @@ public interface TaskService {
 	public User changeAssignee(Integer taskId, Integer userId) throws TaskException, UserException;
 	
 	public Sprint changeSprint(Integer taskId, Integer sprintId) throws TaskException, SprintException;
+	
+	public Task changeStatus(Integer taskId, String newStatus) throws TaskException;
 }

@@ -154,4 +154,28 @@ public class TaskServiceImpl implements TaskService {
 		}
 		throw new TaskException("No task found with id: " + taskId);
 	}
+
+	@Override
+	public Task changeStatus(Integer taskId, String newStatus) throws TaskException {
+		Optional<Task> taskOpt = trepo.findById(taskId);
+		
+		if(taskOpt.isPresent()) {
+			Task existingTask = taskOpt.get();
+			
+			if(!newStatus.toUpperCase().equals("PENDING") && !newStatus.toUpperCase().equals("COMPLETED") && !newStatus.toUpperCase().equals("CANCELED")) {
+				throw new TaskException("Please enter a valid status. (PENDING / COMPLETED / CANCELED)");
+			}
+			
+			if(newStatus.toUpperCase().equals(existingTask.getStatus().toString())) {
+				throw new TaskException("The status of the task is already: "+newStatus);
+			}
+			
+			existingTask.setStatus(Status.valueOf(newStatus.toUpperCase()));
+			
+			Task updatedTask = trepo.save(existingTask);
+			
+			return updatedTask;
+		}
+		throw new TaskException("No task found with id: "+taskId);
+	}
 }
