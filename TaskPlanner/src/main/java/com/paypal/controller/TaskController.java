@@ -46,4 +46,10 @@ public class TaskController {
 		Sprint addedSprint = tservice.changeSprint(taskId,sprintId);
 		return new ResponseEntity<Sprint>(addedSprint, HttpStatus.OK);
 	}
+	
+	@PutMapping("/changestatus/{taskId}/{newStatus}")
+	public ResponseEntity<Task> changeStatus(@PathVariable("taskId") Integer taskId, @PathVariable("newStatus") String newStatus){
+		Task updatedTask = tservice.changeStatus(taskId,newStatus);
+		return new ResponseEntity<Task>(updatedTask, HttpStatus.OK);
+	}
 }
