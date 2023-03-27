@@ -76,6 +76,6 @@ public class UserServiceImpl implements UserService {
 			}
 			throw new TaskException("No assigned task yet with user: "+existingUser.getUserName()+" (Id: "+userId+")");
 		}
-		throw new UserException("No user with id: "+userId+" found in system...!");
+		throw new UserException("No user with id: "+userId+" found in the system...!");
 	}
 }
