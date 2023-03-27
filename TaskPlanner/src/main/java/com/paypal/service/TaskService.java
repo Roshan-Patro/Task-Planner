@@ -10,4 +10,6 @@ public interface TaskService {
 	public Task createTask(CreateTaskDto dto) throws TaskException, UserException;
 
 	public User assignTaskToUser(Integer taskId, Integer userId) throws TaskException, UserException;
+	
+	public User changeAssignee(Integer taskId, Integer userId) throws TaskException, UserException;
 }

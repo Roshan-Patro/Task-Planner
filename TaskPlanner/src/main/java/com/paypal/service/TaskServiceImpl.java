@@ -1,6 +1,7 @@
 package com.paypal.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,24 +56,62 @@ public class TaskServiceImpl implements TaskService {
 	@Override
 	public User assignTaskToUser(Integer taskId, Integer userId) throws TaskException, UserException {
 		Optional<Task> taskOpt = trepo.findById(taskId);
-		
-		if(taskOpt.isPresent()) {
+
+		if (taskOpt.isPresent()) {
 			Task existingTask = taskOpt.get();
-			
+
 			Optional<User> userOpt = urepo.findById(userId);
-			if(userOpt.isPresent()) {
+			if (userOpt.isPresent()) {
 				User existingUser = userOpt.get();
-				
+
 				existingTask.setAssignee(existingUser);
-				
+
 				existingUser.getAssignedTasks().add(existingTask);
+
+				User updatedUser = urepo.save(existingUser);
+
+				return updatedUser;
+			}
+			throw new UserException("No user found with id: " + userId);
+		}
+		throw new TaskException("No task found with id: " + taskId);
+	}
+
+	@Override
+	public User changeAssignee(Integer taskId, Integer userId) throws TaskException, UserException {
+		Optional<Task> taskOpt = trepo.findById(taskId);
+
+		if (taskOpt.isPresent()) {
+			Task existingTask = taskOpt.get();
+
+			Optional<User> userOpt = urepo.findById(userId);
+			if (userOpt.isPresent()) {
 				
+				if(userId==existingTask.getAssignee().getUserId()) {
+					throw new TaskException("Task is already assigned to the user: "+userId);
+				}
+				
+				User existingUser = userOpt.get();
+
+				User previousUser = existingTask.getAssignee();
+				
+				if (previousUser != null) {
+					List<Task> currentTasks = previousUser.getAssignedTasks();
+					currentTasks.removeIf(obj -> obj.getTaskId()==taskId);
+					previousUser.setAssignedTasks(currentTasks);
+					urepo.save(previousUser);
+				}
+
+				existingTask.setAssignee(existingUser);
+
+				existingUser.getAssignedTasks().add(existingTask);
+
 				User updatedUser = urepo.save(existingUser);
 				
 				return updatedUser;
 			}
-			throw new UserException("No user found with id: "+userId);
+			throw new UserException("No user found with id: " + userId);
 		}
-		throw new TaskException("No task found with id: "+taskId);
+		throw new TaskException("No task found with id: " + taskId);
 	}
 }
