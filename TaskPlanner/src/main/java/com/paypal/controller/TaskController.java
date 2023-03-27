@@ -33,4 +33,10 @@ public class TaskController {
 		User assignedUser = tservice.assignTaskToUser(taskId,userId);
 		return new ResponseEntity<User>(assignedUser, HttpStatus.OK);
 	}
+	
+	@PutMapping("/changeassignee/{taskId}/{userId}")
+	public ResponseEntity<User> changeAssignee(@PathVariable("taskId") Integer taskId, @PathVariable("userId") Integer userId){
+		User assignedUser = tservice.changeAssignee(taskId,userId);
+		return new ResponseEntity<User>(assignedUser, HttpStatus.OK);
+	}
 }
