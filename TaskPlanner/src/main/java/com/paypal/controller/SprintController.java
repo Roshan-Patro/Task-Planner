@@ -1,8 +1,11 @@
 package com.paypal.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.paypal.dto.CreateSprintDto;
 import com.paypal.model.Sprint;
+import com.paypal.model.Task;
 import com.paypal.service.SprintService;
 
 @RestController
@@ -31,5 +35,11 @@ public class SprintController {
 			@PathVariable("taskId") Integer taskId) {
 		Sprint updatedSprint = sservice.addTaskToSprint(sprintId, taskId);
 		return new ResponseEntity<Sprint>(updatedSprint, HttpStatus.OK);
+	}
+	
+	@GetMapping("/addedtasks/{sprintId}")
+	public ResponseEntity<List<Task>> getAddedTasks(@PathVariable("sprintId") Integer sprintId){
+		List<Task> addedTasks = sservice.getAddedTasks(sprintId);
+		return new ResponseEntity<List<Task>>(addedTasks, HttpStatus.OK);
 	}
 }

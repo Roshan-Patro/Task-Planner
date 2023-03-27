@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateSprintDto {
 	private String sprintDesc;
-	private String createdOn;
 	private Integer createrId;
 }
