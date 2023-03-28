@@ -226,4 +226,25 @@ public class TaskServiceImpl implements TaskService {
 			throw new TaskException("No task found with id: " + taskId);
 		}
 	}
+
+	@Override
+	public Task changeEndDateOfTask(Integer taskId, String newEndDate) throws TaskException {
+		Optional<Task> taskOpt = trepo.findById(taskId);
+
+		if (taskOpt.isPresent()) {
+			Task existingTask = taskOpt.get();
+			
+			if(existingTask.getEndDate().isEqual(LocalDate.parse(newEndDate))) {
+				throw new TaskException("The end date is already: "+LocalDate.parse(newEndDate));
+			}
+			
+			existingTask.setEndDate(LocalDate.parse(newEndDate));
+			Task updatedTask = trepo.save(existingTask);
+			
+			return updatedTask;
+		}
+		else {
+			throw new TaskException("No task found with id: " + taskId);
+		}
+	}
 }
