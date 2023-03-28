@@ -80,7 +80,7 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	@Override
-	public User changeAssignee(Integer taskId, Integer userId) throws TaskException, UserException {
+	public User changeAssigneeOfTask(Integer taskId, Integer userId) throws TaskException, UserException {
 		Optional<Task> taskOpt = trepo.findById(taskId);
 
 		if (taskOpt.isPresent()) {
@@ -88,18 +88,18 @@ public class TaskServiceImpl implements TaskService {
 
 			Optional<User> userOpt = urepo.findById(userId);
 			if (userOpt.isPresent()) {
-				
-				if(userId==existingTask.getAssignee().getUserId()) {
-					throw new TaskException("Task is already assigned to the user: "+userId);
+
+				if (userId == existingTask.getAssignee().getUserId()) {
+					throw new TaskException("Task is already assigned to the user: " + userId);
 				}
-				
+
 				User existingUser = userOpt.get();
 
 				User previousUser = existingTask.getAssignee();
-				
+
 				if (previousUser != null) {
 					List<Task> currentTasks = previousUser.getAssignedTasks();
-					currentTasks.removeIf(obj -> obj.getTaskId()==taskId);
+					currentTasks.removeIf(obj -> obj.getTaskId() == taskId);
 					previousUser.setAssignedTasks(currentTasks);
 					urepo.save(previousUser);
 				}
@@ -109,7 +109,7 @@ public class TaskServiceImpl implements TaskService {
 				existingUser.getAssignedTasks().add(existingTask);
 
 				User updatedUser = urepo.save(existingUser);
-				
+
 				return updatedUser;
 			}
 			throw new UserException("No user found with id: " + userId);
@@ -118,7 +118,7 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	@Override
-	public Sprint changeSprint(Integer taskId, Integer sprintId) throws TaskException, SprintException {
+	public Sprint changeSprintOfTask(Integer taskId, Integer sprintId) throws TaskException, SprintException {
 		Optional<Task> taskOpt = trepo.findById(taskId);
 
 		if (taskOpt.isPresent()) {
@@ -126,18 +126,18 @@ public class TaskServiceImpl implements TaskService {
 
 			Optional<Sprint> sprintOpt = srepo.findById(sprintId);
 			if (sprintOpt.isPresent()) {
-				
-				if(sprintId==existingTask.getSprint().getSprintId()) {
-					throw new TaskException("Task is already added to the sprint: "+sprintId);
+
+				if (sprintId == existingTask.getSprint().getSprintId()) {
+					throw new TaskException("Task is already added to the sprint: " + sprintId);
 				}
-				
+
 				Sprint existingSprint = sprintOpt.get();
 
 				Sprint previousSprint = existingTask.getSprint();
-				
+
 				if (previousSprint != null) {
 					List<Task> currentTasks = previousSprint.getTaskList();
-					currentTasks.removeIf(obj -> obj.getTaskId()==taskId);
+					currentTasks.removeIf(obj -> obj.getTaskId() == taskId);
 					previousSprint.setTaskList(currentTasks);
 					srepo.save(previousSprint);
 				}
@@ -147,7 +147,7 @@ public class TaskServiceImpl implements TaskService {
 				existingSprint.getTaskList().add(existingTask);
 
 				Sprint updatedSprint = srepo.save(existingSprint);
-				
+
 				return updatedSprint;
 			}
 			throw new SprintException("No sprint found with id: " + sprintId);
@@ -156,26 +156,53 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	@Override
-	public Task changeStatus(Integer taskId, String newStatus) throws TaskException {
+	public Task changeStatusOfTask(Integer taskId, String newStatus) throws TaskException {
 		Optional<Task> taskOpt = trepo.findById(taskId);
-		
-		if(taskOpt.isPresent()) {
+
+		if (taskOpt.isPresent()) {
 			Task existingTask = taskOpt.get();
-			
-			if(!newStatus.toUpperCase().equals("PENDING") && !newStatus.toUpperCase().equals("COMPLETED") && !newStatus.toUpperCase().equals("CANCELED")) {
+
+			if (!newStatus.toUpperCase().equals("PENDING") && !newStatus.toUpperCase().equals("COMPLETED")
+					&& !newStatus.toUpperCase().equals("CANCELED")) {
 				throw new TaskException("Please enter a valid status. (PENDING / COMPLETED / CANCELED)");
 			}
-			
-			if(newStatus.toUpperCase().equals(existingTask.getStatus().toString())) {
-				throw new TaskException("The status of the task is already: "+newStatus);
+
+			if (newStatus.toUpperCase().equals(existingTask.getStatus().toString())) {
+				throw new TaskException("The status of the task is already: " + newStatus);
 			}
-			
+
 			existingTask.setStatus(Status.valueOf(newStatus.toUpperCase()));
-			
+
 			Task updatedTask = trepo.save(existingTask);
-			
+
 			return updatedTask;
 		}
-		throw new TaskException("No task found with id: "+taskId);
+		throw new TaskException("No task found with id: " + taskId);
+	}
+
+	@Override
+	public Task changePriorityOfTask(Integer taskId, String newPriority) throws TaskException {
+		Optional<Task> taskOpt = trepo.findById(taskId);
+
+		if (taskOpt.isPresent()) {
+			Task existingTask = taskOpt.get();
+
+			if (!newPriority.toUpperCase().equals("VERYLOW") && !newPriority.toUpperCase().equals("LOW")
+					&& !newPriority.toUpperCase().equals("MEDIUM") && !newPriority.toUpperCase().equals("HIGH")
+					&& !newPriority.toUpperCase().equals("CRITICAL")) {
+				throw new TaskException("Please enter a valid status. (VERYLOW / LOW / MEDIUM / HIGH / CRITICAL)");
+			}
+			
+			if (newPriority.toUpperCase().equals(existingTask.getPriority().toString())) {
+				throw new TaskException("The status of the task is already: " + newPriority);
+			}
+			
+			existingTask.setPriority(Priority.valueOf(newPriority.toUpperCase()));
+
+			Task updatedTask = trepo.save(existingTask);
+
+			return updatedTask;
+		}
+		throw new TaskException("No task found with id: " + taskId);
 	}
 }
