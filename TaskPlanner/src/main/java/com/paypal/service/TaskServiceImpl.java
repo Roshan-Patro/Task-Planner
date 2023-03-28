@@ -192,11 +192,11 @@ public class TaskServiceImpl implements TaskService {
 					&& !newPriority.toUpperCase().equals("CRITICAL")) {
 				throw new TaskException("Please enter a valid status. (VERYLOW / LOW / MEDIUM / HIGH / CRITICAL)");
 			}
-			
+
 			if (newPriority.toUpperCase().equals(existingTask.getPriority().toString())) {
 				throw new TaskException("The status of the task is already: " + newPriority);
 			}
-			
+
 			existingTask.setPriority(Priority.valueOf(newPriority.toUpperCase()));
 
 			Task updatedTask = trepo.save(existingTask);
@@ -204,5 +204,26 @@ public class TaskServiceImpl implements TaskService {
 			return updatedTask;
 		}
 		throw new TaskException("No task found with id: " + taskId);
+	}
+
+	@Override
+	public Task changeStartDateOfTask(Integer taskId, String newStartDate) throws TaskException {
+		Optional<Task> taskOpt = trepo.findById(taskId);
+
+		if (taskOpt.isPresent()) {
+			Task existingTask = taskOpt.get();
+			
+			if(existingTask.getStartDate().isEqual(LocalDate.parse(newStartDate))) {
+				throw new TaskException("The start date is already: "+LocalDate.parse(newStartDate));
+			}
+			
+			existingTask.setStartDate(LocalDate.parse(newStartDate));
+			Task updatedTask = trepo.save(existingTask);
+			
+			return updatedTask;
+		}
+		else {
+			throw new TaskException("No task found with id: " + taskId);
+		}
 	}
 }

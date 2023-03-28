@@ -14,6 +14,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,8 +34,10 @@ public class Task {
 
 	private Integer createrId;
 
+	@FutureOrPresent(message = "Start date cannot be a past date.")
 	private LocalDate startDate;
 
+	@Future
 	private LocalDate endDate;
 
 	@Enumerated(EnumType.STRING)

@@ -20,4 +20,6 @@ public interface TaskService {
 	public Task changeStatusOfTask(Integer taskId, String newStatus) throws TaskException;
 	
 	public Task changePriorityOfTask(Integer taskId, String newPriority) throws TaskException;
+	
+	public Task changeStartDateOfTask(Integer taskId, String newStartDate) throws TaskException;
 }
