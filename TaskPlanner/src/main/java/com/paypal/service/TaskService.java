@@ -13,9 +13,11 @@ public interface TaskService {
 
 	public User assignTaskToUser(Integer taskId, Integer userId) throws TaskException, UserException;
 	
-	public User changeAssignee(Integer taskId, Integer userId) throws TaskException, UserException;
+	public User changeAssigneeOfTask(Integer taskId, Integer userId) throws TaskException, UserException;
 	
-	public Sprint changeSprint(Integer taskId, Integer sprintId) throws TaskException, SprintException;
+	public Sprint changeSprintOfTask(Integer taskId, Integer sprintId) throws TaskException, SprintException;
 	
-	public Task changeStatus(Integer taskId, String newStatus) throws TaskException;
+	public Task changeStatusOfTask(Integer taskId, String newStatus) throws TaskException;
+	
+	public Task changePriorityOfTask(Integer taskId, String newPriority) throws TaskException;
 }

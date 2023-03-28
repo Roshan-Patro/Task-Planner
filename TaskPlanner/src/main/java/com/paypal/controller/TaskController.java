@@ -36,20 +36,26 @@ public class TaskController {
 	}
 	
 	@PutMapping("/changeassignee/{taskId}/{userId}")
-	public ResponseEntity<User> changeAssignee(@PathVariable("taskId") Integer taskId, @PathVariable("userId") Integer userId){
-		User assignedUser = tservice.changeAssignee(taskId,userId);
+	public ResponseEntity<User> changeAssigneeOfTask(@PathVariable("taskId") Integer taskId, @PathVariable("userId") Integer userId){
+		User assignedUser = tservice.changeAssigneeOfTask(taskId,userId);
 		return new ResponseEntity<User>(assignedUser, HttpStatus.OK);
 	}
 	
 	@PutMapping("/changesprint/{taskId}/{sprintId}")
-	public ResponseEntity<Sprint> changeSprint(@PathVariable("taskId") Integer taskId, @PathVariable("sprintId") Integer sprintId){
-		Sprint addedSprint = tservice.changeSprint(taskId,sprintId);
+	public ResponseEntity<Sprint> changeSprintOfTask(@PathVariable("taskId") Integer taskId, @PathVariable("sprintId") Integer sprintId){
+		Sprint addedSprint = tservice.changeSprintOfTask(taskId,sprintId);
 		return new ResponseEntity<Sprint>(addedSprint, HttpStatus.OK);
 	}
 	
 	@PutMapping("/changestatus/{taskId}/{newStatus}")
-	public ResponseEntity<Task> changeStatus(@PathVariable("taskId") Integer taskId, @PathVariable("newStatus") String newStatus){
-		Task updatedTask = tservice.changeStatus(taskId,newStatus);
+	public ResponseEntity<Task> changeStatusOfTask(@PathVariable("taskId") Integer taskId, @PathVariable("newStatus") String newStatus){
+		Task updatedTask = tservice.changeStatusOfTask(taskId,newStatus);
+		return new ResponseEntity<Task>(updatedTask, HttpStatus.OK);
+	}
+	
+	@PutMapping("/changepriority/{taskId}/{newPriority}")
+	public ResponseEntity<Task> changePriorityOfTask(@PathVariable("taskId") Integer taskId, @PathVariable("newPriority") String newPriority){
+		Task updatedTask = tservice.changePriorityOfTask(taskId,newPriority);
 		return new ResponseEntity<Task>(updatedTask, HttpStatus.OK);
 	}
 }
