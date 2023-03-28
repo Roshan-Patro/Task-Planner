@@ -22,4 +22,6 @@ public interface TaskService {
 	public Task changePriorityOfTask(Integer taskId, String newPriority) throws TaskException;
 	
 	public Task changeStartDateOfTask(Integer taskId, String newStartDate) throws TaskException;
+	
+	public Task changeEndDateOfTask(Integer taskId, String newEndDate) throws TaskException;
 }
