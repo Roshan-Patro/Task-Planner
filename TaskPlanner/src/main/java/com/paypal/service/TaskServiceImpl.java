@@ -172,6 +172,7 @@ public class TaskServiceImpl implements TaskService {
 			}
 
 			existingTask.setStatus(Status.valueOf(newStatus.toUpperCase()));
+			
 
 			Task updatedTask = trepo.save(existingTask);
 
@@ -212,17 +213,16 @@ public class TaskServiceImpl implements TaskService {
 
 		if (taskOpt.isPresent()) {
 			Task existingTask = taskOpt.get();
-			
-			if(existingTask.getStartDate().isEqual(LocalDate.parse(newStartDate))) {
-				throw new TaskException("The start date is already: "+LocalDate.parse(newStartDate));
+
+			if (existingTask.getStartDate().isEqual(LocalDate.parse(newStartDate))) {
+				throw new TaskException("The start date is already: " + LocalDate.parse(newStartDate));
 			}
-			
+
 			existingTask.setStartDate(LocalDate.parse(newStartDate));
 			Task updatedTask = trepo.save(existingTask);
-			
+
 			return updatedTask;
-		}
-		else {
+		} else {
 			throw new TaskException("No task found with id: " + taskId);
 		}
 	}
@@ -233,17 +233,41 @@ public class TaskServiceImpl implements TaskService {
 
 		if (taskOpt.isPresent()) {
 			Task existingTask = taskOpt.get();
-			
-			if(existingTask.getEndDate().isEqual(LocalDate.parse(newEndDate))) {
-				throw new TaskException("The end date is already: "+LocalDate.parse(newEndDate));
+
+			if (existingTask.getEndDate().isEqual(LocalDate.parse(newEndDate))) {
+				throw new TaskException("The end date is already: " + LocalDate.parse(newEndDate));
 			}
-			
+
 			existingTask.setEndDate(LocalDate.parse(newEndDate));
 			Task updatedTask = trepo.save(existingTask);
-			
+
 			return updatedTask;
+		} else {
+			throw new TaskException("No task found with id: " + taskId);
 		}
-		else {
+	}
+
+	@Override
+	public Task changeTypeOfTask(Integer taskId, String newType) throws TaskException {
+		Optional<Task> taskOpt = trepo.findById(taskId);
+
+		if (taskOpt.isPresent()) {
+			Task existingTask = taskOpt.get();
+
+			if (!newType.toUpperCase().equals("BUG") && !newType.toUpperCase().equals("FEATURE")
+					&& !newType.toUpperCase().equals("STORY")) {
+				throw new TaskException("Please enter a valid type. (BUG / FEATURE / STORY)");
+			}
+
+			if (newType.toUpperCase().equals(existingTask.getType().toString())) {
+				throw new TaskException("The type of the task is already: " + newType);
+			}
+
+			existingTask.setType(Type.valueOf(newType.toUpperCase()));
+			Task updatedTask = trepo.save(existingTask);
+
+			return updatedTask;
+		} else {
 			throw new TaskException("No task found with id: " + taskId);
 		}
 	}
