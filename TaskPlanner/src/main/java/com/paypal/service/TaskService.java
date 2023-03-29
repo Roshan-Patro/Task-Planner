@@ -24,4 +24,6 @@ public interface TaskService {
 	public Task changeStartDateOfTask(Integer taskId, String newStartDate) throws TaskException;
 	
 	public Task changeEndDateOfTask(Integer taskId, String newEndDate) throws TaskException;
+	
+	public Task changeTypeOfTask(Integer taskId, String newType) throws TaskException;
 }

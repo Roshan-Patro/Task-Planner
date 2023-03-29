@@ -77,4 +77,11 @@ public class TaskController {
 		Task updatedTask = tservice.changeEndDateOfTask(taskId, newEndDate);
 		return new ResponseEntity<Task>(updatedTask, HttpStatus.OK);
 	}
+	
+	@PutMapping("/changetype/{taskId}/{newType}")
+	public ResponseEntity<Task> changeTypeOfTask(@PathVariable("taskId") Integer taskId,
+			@PathVariable("newType") String newType) {
+		Task updatedTask = tservice.changeTypeOfTask(taskId, newType);
+		return new ResponseEntity<Task>(updatedTask, HttpStatus.OK);
+	}
 }
