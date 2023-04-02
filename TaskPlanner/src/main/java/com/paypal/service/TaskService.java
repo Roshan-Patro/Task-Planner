@@ -33,4 +33,6 @@ public interface TaskService {
 	public Task updateTask(UpdateTaskDto dto) throws TaskException;
 	
 	public List<Task> getAllTasks() throws TaskException;
+	
+	public List<Task> getTasksWithPagination(Integer pageNo, Integer pageSize) throws TaskException;
 }
