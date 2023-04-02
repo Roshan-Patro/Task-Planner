@@ -1,5 +1,7 @@
 package com.paypal.service;
 
+import java.util.List;
+
 import com.paypal.dto.CreateTaskDto;
 import com.paypal.dto.UpdateTaskDto;
 import com.paypal.exception.SprintException;
@@ -29,4 +31,6 @@ public interface TaskService {
 	public Task changeTypeOfTask(Integer taskId, String newType) throws TaskException;
 	
 	public Task updateTask(UpdateTaskDto dto) throws TaskException;
+	
+	public List<Task> getAllTasks() throws TaskException;
 }
