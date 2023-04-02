@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.paypal.dto.CreateTaskDto;
@@ -329,9 +332,9 @@ public class TaskServiceImpl implements TaskService {
 			} else {
 				throw new TaskException("No sprint found with id: " + dto.getNewSprintId() + " to add.");
 			}
-			
+
 			Task updatedTask = trepo.save(existingTask);
-			
+
 			return updatedTask;
 
 		}
@@ -341,10 +344,27 @@ public class TaskServiceImpl implements TaskService {
 	@Override
 	public List<Task> getAllTasks() throws TaskException {
 		List<Task> allTasks = trepo.findAll();
-		
-		if(!allTasks.isEmpty()) {
+
+		if (!allTasks.isEmpty()) {
 			return allTasks;
 		}
 		throw new TaskException("No task found in system.");
+	}
+
+	@Override
+	public List<Task> getTasksWithPagination(Integer pageNo, Integer pageSize) throws TaskException {
+		Pageable pObj = PageRequest.of(pageNo, pageSize);
+		if (pObj.isPaged()) {
+			Page<Task> tasksPage = trepo.findAll(pObj);
+			List<Task> tasksList = tasksPage.getContent();
+			if (!tasksList.isEmpty()) {
+				return tasksList;
+			}
+			throw new TaskException("No data found for page number: " + pageNo + " and page size: " + pageSize);
+
+		} else {
+			throw new TaskException("No pagination information found...!");
+		}
+
 	}
 }

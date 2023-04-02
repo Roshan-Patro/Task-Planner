@@ -81,23 +81,30 @@ public class TaskController {
 		Task updatedTask = tservice.changeEndDateOfTask(taskId, newEndDate);
 		return new ResponseEntity<Task>(updatedTask, HttpStatus.OK);
 	}
-	
+
 	@PutMapping("/changetype/{taskId}/{newType}")
 	public ResponseEntity<Task> changeTypeOfTask(@PathVariable("taskId") Integer taskId,
 			@PathVariable("newType") String newType) {
 		Task updatedTask = tservice.changeTypeOfTask(taskId, newType);
 		return new ResponseEntity<Task>(updatedTask, HttpStatus.OK);
 	}
-	
+
 	@PutMapping("/update")
 	public ResponseEntity<Task> updateTask(@RequestBody UpdateTaskDto dto) {
 		Task updatedTask = tservice.updateTask(dto);
 		return new ResponseEntity<Task>(updatedTask, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/alltasks")
 	public ResponseEntity<List<Task>> getAllTasks() {
 		List<Task> allTasks = tservice.getAllTasks();
+		return new ResponseEntity<List<Task>>(allTasks, HttpStatus.OK);
+	}
+
+	@GetMapping("/alltasks/{pageNo}/{pageSize}")
+	public ResponseEntity<List<Task>> getTasksWithPagination(@PathVariable("pageNo") Integer pageNo,
+			@PathVariable("pageSize") Integer pageSize) {
+		List<Task> allTasks = tservice.getTasksWithPagination(pageNo, pageSize);
 		return new ResponseEntity<List<Task>>(allTasks, HttpStatus.OK);
 	}
 }
