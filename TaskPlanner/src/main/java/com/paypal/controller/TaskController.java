@@ -1,8 +1,11 @@
 package com.paypal.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -90,5 +93,11 @@ public class TaskController {
 	public ResponseEntity<Task> updateTask(@RequestBody UpdateTaskDto dto) {
 		Task updatedTask = tservice.updateTask(dto);
 		return new ResponseEntity<Task>(updatedTask, HttpStatus.OK);
+	}
+	
+	@GetMapping("/alltasks")
+	public ResponseEntity<List<Task>> getAllTasks() {
+		List<Task> allTasks = tservice.getAllTasks();
+		return new ResponseEntity<List<Task>>(allTasks, HttpStatus.OK);
 	}
 }

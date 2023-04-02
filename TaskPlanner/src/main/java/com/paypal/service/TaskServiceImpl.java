@@ -337,4 +337,14 @@ public class TaskServiceImpl implements TaskService {
 		}
 		throw new TaskException("No task found with id: " + dto.getTaskId());
 	}
+
+	@Override
+	public List<Task> getAllTasks() throws TaskException {
+		List<Task> allTasks = trepo.findAll();
+		
+		if(!allTasks.isEmpty()) {
+			return allTasks;
+		}
+		throw new TaskException("No task found in system.");
+	}
 }
