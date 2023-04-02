@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.paypal.dto.CreateTaskDto;
+import com.paypal.dto.UpdateTaskDto;
 import com.paypal.model.Sprint;
 import com.paypal.model.Task;
 import com.paypal.model.User;
@@ -82,6 +83,12 @@ public class TaskController {
 	public ResponseEntity<Task> changeTypeOfTask(@PathVariable("taskId") Integer taskId,
 			@PathVariable("newType") String newType) {
 		Task updatedTask = tservice.changeTypeOfTask(taskId, newType);
+		return new ResponseEntity<Task>(updatedTask, HttpStatus.OK);
+	}
+	
+	@PutMapping("/update")
+	public ResponseEntity<Task> updateTask(@RequestBody UpdateTaskDto dto) {
+		Task updatedTask = tservice.updateTask(dto);
 		return new ResponseEntity<Task>(updatedTask, HttpStatus.OK);
 	}
 }

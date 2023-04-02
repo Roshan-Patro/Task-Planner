@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.paypal.dto.CreateTaskDto;
+import com.paypal.dto.UpdateTaskDto;
 import com.paypal.enums.Priority;
 import com.paypal.enums.Status;
 import com.paypal.enums.Type;
@@ -172,7 +173,6 @@ public class TaskServiceImpl implements TaskService {
 			}
 
 			existingTask.setStatus(Status.valueOf(newStatus.toUpperCase()));
-			
 
 			Task updatedTask = trepo.save(existingTask);
 
@@ -270,5 +270,71 @@ public class TaskServiceImpl implements TaskService {
 		} else {
 			throw new TaskException("No task found with id: " + taskId);
 		}
+	}
+
+	@Override
+	public Task updateTask(UpdateTaskDto dto) throws TaskException {
+		Optional<Task> taskOpt = trepo.findById(dto.getTaskId());
+
+		if (taskOpt.isPresent()) {
+			Task existingTask = taskOpt.get();
+
+			existingTask.setTaskDesc(dto.getTaskDesc());
+			existingTask.setStartDate(LocalDate.parse(dto.getStartDate()));
+			existingTask.setEndDate(LocalDate.parse(dto.getEndDate()));
+			existingTask.setType(Type.valueOf(dto.getType().toUpperCase()));
+			existingTask.setPriority(Priority.valueOf(dto.getPriority().toUpperCase()));
+			existingTask.setStatus(Status.valueOf(dto.getStatus().toUpperCase()));
+
+			// Updating assignee
+			Optional<User> userOpt = urepo.findById(dto.getNewAssigneeId());
+			if (userOpt.isPresent()) {
+				if (existingTask.getAssignee() != null
+						&& (existingTask.getAssignee().getUserId() != dto.getNewAssigneeId())) {
+					User previousAssignee = existingTask.getAssignee();
+
+					previousAssignee.getAssignedTasks().removeIf(obj -> obj.getTaskId() == existingTask.getTaskId());
+
+					existingTask.setAssignee(userOpt.get());
+
+					userOpt.get().getAssignedTasks().add(existingTask);
+				} else if (existingTask.getAssignee() == null) {
+
+					existingTask.setAssignee(userOpt.get());
+
+					userOpt.get().getAssignedTasks().add(existingTask);
+				}
+			} else {
+				throw new TaskException("No user found with id: " + dto.getNewAssigneeId() + " to assign.");
+			}
+
+			// Updating sprint
+			Optional<Sprint> sprintOpt = srepo.findById(dto.getNewSprintId());
+			if (sprintOpt.isPresent()) {
+				if (existingTask.getSprint() != null
+						&& (existingTask.getSprint().getSprintId() != dto.getNewSprintId())) {
+					Sprint previousSprint = existingTask.getSprint();
+
+					previousSprint.getTaskList().removeIf(obj -> obj.getTaskId() == existingTask.getTaskId());
+
+					existingTask.setSprint(sprintOpt.get());
+
+					sprintOpt.get().getTaskList().add(existingTask);
+				} else if (existingTask.getSprint() == null) {
+
+					existingTask.setSprint(sprintOpt.get());
+
+					sprintOpt.get().getTaskList().add(existingTask);
+				}
+			} else {
+				throw new TaskException("No sprint found with id: " + dto.getNewSprintId() + " to add.");
+			}
+			
+			Task updatedTask = trepo.save(existingTask);
+			
+			return updatedTask;
+
+		}
+		throw new TaskException("No task found with id: " + dto.getTaskId());
 	}
 }
