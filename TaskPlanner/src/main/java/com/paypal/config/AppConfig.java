@@ -14,11 +14,12 @@ public class AppConfig {
 
 	@Bean
 	public SecurityFilterChain sprintSecurityConfiguration(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests().requestMatchers(HttpMethod.POST, "taskplanner/user/register").permitAll().anyRequest()
-				.authenticated().and().csrf().disable().
-				addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class).
-				addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class).
-				formLogin().and().httpBasic();
+		http.authorizeHttpRequests().requestMatchers(HttpMethod.POST, "taskplanner/user/register").permitAll()
+		.anyRequest().authenticated().and()
+		.csrf().disable()
+		.addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+		.addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
+		.formLogin().and().httpBasic();
 		
 		return http.build();
 	}

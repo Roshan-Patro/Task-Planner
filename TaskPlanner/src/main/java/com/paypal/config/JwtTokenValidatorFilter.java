@@ -1,6 +1,7 @@
 package com.paypal.config;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.crypto.SecretKey;
@@ -10,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -41,11 +43,13 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
 				String username = String.valueOf(claims.get("username"));
 
-				String authorities = (String) claims.get("authorities");
+				String role = (String) claims.get("role");
 
-				List<GrantedAuthority> auths = AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
+				List<GrantedAuthority> authorities = new ArrayList<>();
+				
+				authorities.add(new SimpleGrantedAuthority(role));
 
-				Authentication auth = new UsernamePasswordAuthenticationToken(username, null, auths);
+				Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
 
 				SecurityContextHolder.getContext().setAuthentication(auth);
 

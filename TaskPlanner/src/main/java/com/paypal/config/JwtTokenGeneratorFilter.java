@@ -32,7 +32,7 @@ public class JwtTokenGeneratorFilter extends OncePerRequestFilter {
 
 			String jwt = Jwts.builder().setIssuer("TaskPlanner").setSubject("JWT Token")
 					.claim("username", authentication.getName())
-					.claim("authorities", populateAuthorities(authentication.getAuthorities())).setIssuedAt(new Date())
+					.claim("role", getRole(authentication.getAuthorities())).setIssuedAt(new Date())
 					.setExpiration(new Date(new Date().getTime() + 30000000)).signWith(key).compact();
 
 			response.setHeader(SecurityConstants.JWT_HEADER, jwt);
@@ -43,14 +43,14 @@ public class JwtTokenGeneratorFilter extends OncePerRequestFilter {
 
 	}
 
-	private String populateAuthorities(Collection<? extends GrantedAuthority> collection) {
+	private String getRole(Collection<? extends GrantedAuthority> collection) {
 
-		Set<String> authoritiesSet = new HashSet<>();
+		String role="";
 
 		for (GrantedAuthority authority : collection) {
-			authoritiesSet.add(authority.getAuthority());
+			role = authority.getAuthority();
 		}
-		return String.join(",", authoritiesSet);
+		return role;
 
 	}
 

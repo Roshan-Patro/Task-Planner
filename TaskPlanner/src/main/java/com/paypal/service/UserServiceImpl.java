@@ -39,6 +39,7 @@ public class UserServiceImpl implements UserService {
 			newUser.setEmail(dto.getEmail());
 			newUser.setAddress(dto.getAddress());
 			newUser.setPassword(dto.getPassword());
+			newUser.setRole(dto.getRole());
 			
 			User savedUser = urepo.save(newUser);
 			
