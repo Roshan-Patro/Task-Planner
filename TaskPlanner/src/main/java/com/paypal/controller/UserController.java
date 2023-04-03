@@ -37,6 +37,7 @@ public class UserController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<User> registerAnUser(@RequestBody RegisterUserDto dto){
+		dto.setRole("ROLE_"+dto.getRole().toUpperCase());
 		dto.setPassword(passwordEncoder.encode(dto.getPassword()));
 		User registeredUser = uservice.registerAnUser(dto);
 		return new ResponseEntity<User>(registeredUser, HttpStatus.CREATED);

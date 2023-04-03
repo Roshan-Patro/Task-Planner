@@ -42,5 +42,7 @@ public class User {
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "assignee")
 	private List<Task> assignedTasks;
+	
+	private String role;
 
 }
