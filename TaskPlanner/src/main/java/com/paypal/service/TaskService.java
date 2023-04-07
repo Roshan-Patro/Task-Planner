@@ -35,4 +35,7 @@ public interface TaskService {
 	public List<Task> getAllTasks() throws TaskException;
 	
 	public List<Task> getTasksWithPagination(Integer pageNo, Integer pageSize) throws TaskException;
+	
+	// An Admin can delete any task. User can delete the tasks created by him/her only.
+	public Task deleteTaskById(Integer taskId) throws TaskException, UserException;
 }
