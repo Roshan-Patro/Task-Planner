@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.paypal.dto.CreateTaskDto;
@@ -365,6 +368,45 @@ public class TaskServiceImpl implements TaskService {
 		} else {
 			throw new TaskException("No pagination information found...!");
 		}
+
+	}
+
+	@Override
+	public Task deleteTaskById(Integer taskId) throws TaskException, UserException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUserName = authentication.getName();
+			Optional<User> userOpt = urepo.findByEmail(currentUserName);
+			User existingUser = userOpt.get();
+
+			if (existingUser.getRole().equals("ROLE_ADMIN")) {
+				Optional<Task> taskOpt = trepo.findById(taskId);
+				if (taskOpt.isPresent()) {
+					Task existingTask = taskOpt.get();
+					trepo.delete(existingTask);
+					return existingTask;
+				}
+				throw new TaskException("Invalid task id: " + taskId);
+			} else if (existingUser.getRole().equals("ROLE_USER")) {
+				Optional<Task> taskOpt = trepo.findById(taskId);
+				if (taskOpt.isPresent()) {
+					Task existingTask = taskOpt.get();
+					User createrOfTask = urepo.findById(existingTask.getCreaterId()).get();
+					if(createrOfTask.getEmail().equals(existingUser.getEmail())) {
+						trepo.delete(existingTask);
+						return existingTask;
+					}
+					throw new TaskException("Apart from admin, only the creator of a task can delete the task.");
+				}
+				throw new TaskException("Invalid task id: " + taskId);
+			}
+			else {
+				throw new TaskException("Apart from Admin and User no one else can delete a task.");
+			}
+		}
+		throw new UserException(
+				"Sorry! This task cannot be deleted. Tasks cannot be deleted with anonymous authentication.");
 
 	}
 }

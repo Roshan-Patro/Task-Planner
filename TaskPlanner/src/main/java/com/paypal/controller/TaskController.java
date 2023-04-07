@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -106,5 +107,11 @@ public class TaskController {
 			@PathVariable("pageSize") Integer pageSize) {
 		List<Task> allTasks = tservice.getTasksWithPagination(pageNo, pageSize);
 		return new ResponseEntity<List<Task>>(allTasks, HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/delete/{taskId}")
+	public ResponseEntity<Task> deleteTaskById(@PathVariable("taskId") Integer taskId) {
+		Task deletedTask = tservice.deleteTaskById(taskId);
+		return new ResponseEntity<Task>(deletedTask, HttpStatus.OK);
 	}
 }
