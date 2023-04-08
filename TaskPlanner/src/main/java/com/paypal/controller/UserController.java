@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,5 +66,11 @@ public class UserController {
 	public ResponseEntity<List<Task>> getAssignedTasks(@PathVariable("userId") Integer userId){
 		List<Task> assignedTasks = uservice.getAssignedTasks(userId);
 		return new ResponseEntity<List<Task>>(assignedTasks, HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/delete/{userId}")
+	public ResponseEntity<User> deleteUserById(@PathVariable("userId") Integer userId){
+		User deletedUser = uservice.deleteUserById(userId);
+		return new ResponseEntity<User>(deletedUser, HttpStatus.OK);
 	}
 }

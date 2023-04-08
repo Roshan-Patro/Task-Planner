@@ -15,4 +15,7 @@ public interface UserService {
 	public User loginUser(LoginUserDto dto) throws UserException;
 	
 	public List<Task> getAssignedTasks(Integer userId) throws UserException,TaskException;
+	
+	// Only an admin can delete a user
+	public User deleteUserById(Integer userId) throws UserException;
 }

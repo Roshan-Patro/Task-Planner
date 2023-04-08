@@ -35,9 +35,9 @@ public class User {
 
 	private String address;
 
-	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "creater")
-	private List<Sprint> createdSprints;
+//	@JsonIgnore
+//	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "creater")
+//	private List<Sprint> createdSprints;
 
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "assignee")
