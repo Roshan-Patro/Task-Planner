@@ -41,24 +41,28 @@ public class TaskServiceImpl implements TaskService {
 
 	@Override
 	public Task createTask(CreateTaskDto dto) throws TaskException, UserException {
-		Optional<User> userOpt = urepo.findById(dto.getCreaterId());
+//		Optional<User> userOpt = urepo.findById(dto.getCreaterId());
 
-		if (userOpt.isPresent()) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentUserName = authentication.getName();
+		User existingUser = urepo.findByEmail(currentUserName).get();
+		
+//		if (userOpt.isPresent()) {
 			Task newTask = new Task();
 			newTask.setTaskDesc(dto.getTaskDesc());
-			newTask.setCreaterId(dto.getCreaterId());
+			newTask.setCreaterId(existingUser.getUserId());
 			newTask.setStartDate(LocalDate.parse(dto.getStartDate()));
 			newTask.setEndDate(LocalDate.parse(dto.getEndDate()));
-			newTask.setType(Type.valueOf(dto.getType()));
-			newTask.setPriority(Priority.valueOf(dto.getPriority()));
+			newTask.setType(Type.valueOf(dto.getType().toUpperCase()));
+			newTask.setPriority(Priority.valueOf(dto.getPriority().toUpperCase()));
 			newTask.setStatus(Status.PENDING);
 
 			Task savedTask = trepo.save(newTask);
 
 			return savedTask;
-		}
-		throw new UserException("No user with id: " + dto.getCreaterId()
-				+ " found in the system. Please, try with a different creater id.");
+//		}
+//		throw new UserException("No user with id: " + dto.getCreaterId()
+//				+ " found in the system. Please, try with a different creater id.");
 
 	}
 
