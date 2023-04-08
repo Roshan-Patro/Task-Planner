@@ -15,4 +15,7 @@ public interface SprintService {
 	public Sprint addTaskToSprint(Integer sprintId, Integer taskId) throws SprintException, TaskException;
 	
 	public List<Task> getAddedTasks(Integer sprintId) throws SprintException,TaskException;
+	
+	// Only admin or creator of a sprint can delete the sprint
+	public Sprint deleteSprintById(Integer sprintId) throws SprintException;
 }

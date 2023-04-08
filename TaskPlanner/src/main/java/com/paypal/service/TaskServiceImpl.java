@@ -50,7 +50,7 @@ public class TaskServiceImpl implements TaskService {
 //		if (userOpt.isPresent()) {
 			Task newTask = new Task();
 			newTask.setTaskDesc(dto.getTaskDesc());
-			newTask.setCreaterId(existingUser.getUserId());
+			newTask.setCreatorId(existingUser.getUserId());
 			newTask.setStartDate(LocalDate.parse(dto.getStartDate()));
 			newTask.setEndDate(LocalDate.parse(dto.getEndDate()));
 			newTask.setType(Type.valueOf(dto.getType().toUpperCase()));
@@ -396,7 +396,7 @@ public class TaskServiceImpl implements TaskService {
 				Optional<Task> taskOpt = trepo.findById(taskId);
 				if (taskOpt.isPresent()) {
 					Task existingTask = taskOpt.get();
-					User createrOfTask = urepo.findById(existingTask.getCreaterId()).get();
+					User createrOfTask = urepo.findById(existingTask.getCreatorId()).get();
 					if(createrOfTask.getEmail().equals(existingUser.getEmail())) {
 						trepo.delete(existingTask);
 						return existingTask;

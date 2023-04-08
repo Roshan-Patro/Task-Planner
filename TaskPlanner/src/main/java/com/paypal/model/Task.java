@@ -32,7 +32,7 @@ public class Task {
 
 	private String taskDesc;
 
-	private Integer createrId;
+	private Integer creatorId;
 
 	@FutureOrPresent(message = "Start date cannot be a past date.")
 	private LocalDate startDate;

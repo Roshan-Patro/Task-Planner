@@ -42,8 +42,8 @@ public class SprintServiceImpl implements SprintService {
 			Sprint newSprint = new Sprint();
 			newSprint.setSprintDesc(dto.getSprintDesc());
 			newSprint.setCreatedOn(LocalDate.now());
-			newSprint.setCreaterId(currentUserId);
-			
+			newSprint.setCreatorId(currentUserId);
+
 			return srepo.save(newSprint);
 		}
 		throw new UserException("A sprint cannot be created by someone with anonymous authentication.");
@@ -85,6 +85,39 @@ public class SprintServiceImpl implements SprintService {
 			throw new TaskException("No added task yet in sprint: " + existingSprint.getSprintId());
 		}
 		throw new UserException("No sprint with id: " + sprintId + " found in the system...!");
+	}
+
+	@Override
+	public Sprint deleteSprintById(Integer sprintId) throws SprintException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUsername = authentication.getName();
+			User currentUser = urepo.findByEmail(currentUsername).get();
+
+			if (currentUser.getRole().equals("ROLE_ADMIN")) {
+				Optional<Sprint> targetSprintOpt = srepo.findById(sprintId);
+				if (targetSprintOpt.isPresent()) {
+					Sprint targetSprint = targetSprintOpt.get();
+					srepo.delete(targetSprint);
+					return targetSprint;
+				}
+				throw new SprintException("Invalid sprint id: " + sprintId);
+			} else if (currentUser.getRole().equals("ROLE_USER")) {
+				Optional<Sprint> targetSprintOpt = srepo.findById(sprintId);
+				if (targetSprintOpt.isPresent()) {
+					Sprint targetSprint = targetSprintOpt.get();
+					if (currentUser.getUserId() == targetSprint.getCreatorId()) {
+						srepo.delete(targetSprint);
+						return targetSprint;
+					}
+					throw new SprintException("Apart from admin, only the creator of a sprint can delete the sprint.");
+				}
+				throw new SprintException("Invalid sprint id: " + sprintId);
+			} else {
+				throw new SprintException("Apart from admin and user, no one else can delete any sprint.");
+			}
+		}
+		throw new SprintException("A sprint cannot be deleted by someone with anonymous authentication.");
 	}
 
 }

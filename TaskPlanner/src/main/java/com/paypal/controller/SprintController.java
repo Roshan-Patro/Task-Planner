@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,5 +42,11 @@ public class SprintController {
 	public ResponseEntity<List<Task>> getAddedTasks(@PathVariable("sprintId") Integer sprintId){
 		List<Task> addedTasks = sservice.getAddedTasks(sprintId);
 		return new ResponseEntity<List<Task>>(addedTasks, HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/delete/{sprintId}")
+	public ResponseEntity<Sprint> deleteSprintById(@PathVariable("sprintId") Integer sprintId){
+		Sprint deletedSprint = sservice.deleteSprintById(sprintId);
+		return new ResponseEntity<Sprint>(deletedSprint, HttpStatus.OK);
 	}
 }
