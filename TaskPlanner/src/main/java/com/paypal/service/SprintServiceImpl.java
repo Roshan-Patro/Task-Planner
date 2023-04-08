@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.paypal.dto.CreateSprintDto;
@@ -31,24 +34,19 @@ public class SprintServiceImpl implements SprintService {
 
 	@Override
 	public Sprint createSprint(CreateSprintDto dto) throws SprintException, UserException {
-		Optional<User> userOpt = urepo.findById(dto.getCreaterId());
-
-		if (userOpt.isPresent()) {
-			User existingUser = userOpt.get();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUsername = authentication.getName();
+			Integer currentUserId = urepo.findByEmail(currentUsername).get().getUserId();
 
 			Sprint newSprint = new Sprint();
 			newSprint.setSprintDesc(dto.getSprintDesc());
 			newSprint.setCreatedOn(LocalDate.now());
-			newSprint.setCreater(existingUser);
-
-			existingUser.getCreatedSprints().add(newSprint);
-
-			User updatedUser = urepo.save(existingUser);
-
-			return updatedUser.getCreatedSprints().get(updatedUser.getCreatedSprints().size() - 1);
+			newSprint.setCreaterId(currentUserId);
+			
+			return srepo.save(newSprint);
 		}
-		throw new UserException(
-				"No user found with id: " + dto.getCreaterId() + ". Please, try with a different creater id.");
+		throw new UserException("A sprint cannot be created by someone with anonymous authentication.");
 	}
 
 	@Override
@@ -84,8 +82,7 @@ public class SprintServiceImpl implements SprintService {
 			if (!addedTasks.isEmpty()) {
 				return addedTasks;
 			}
-			throw new TaskException(
-					"No added task yet in sprint: " + existingSprint.getSprintId());
+			throw new TaskException("No added task yet in sprint: " + existingSprint.getSprintId());
 		}
 		throw new UserException("No sprint with id: " + sprintId + " found in the system...!");
 	}

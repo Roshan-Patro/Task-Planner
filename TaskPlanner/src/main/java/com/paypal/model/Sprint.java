@@ -30,9 +30,11 @@ public class Sprint {
 
 	private LocalDate createdOn;
 
-	@JsonIgnore
-	@ManyToOne // Bidirectional
-	private User creater;
+//	@JsonIgnore
+//	@ManyToOne // Bidirectional
+//	private User creater;
+	
+	private Integer createrId;
 
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "sprint") // Bidirectional
