@@ -34,7 +34,7 @@ public class Sprint {
 //	@ManyToOne // Bidirectional
 //	private User creater;
 	
-	private Integer createrId;
+	private Integer creatorId;
 
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "sprint") // Bidirectional
