@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateTaskDto {
 	private String taskDesc;
-	private Integer createrId;
+//	private Integer createrId;
 	
 	@FutureOrPresent(message = "Start date cannot be a past date.")
 	private String startDate;

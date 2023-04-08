@@ -8,16 +8,16 @@ let userRegistration = async () => {
             "Content-type": "application/json"
         },
         body: JSON.stringify({
-                "userName": "Alok",
-                "email": "patro.alok@gmail.com",
+                "userName": "Aman",
+                "email": "patro.aman@gmail.com",
                 "password": "uttam@1997",
                 "address": "Odisha",
                 "role": "user"
         })
     }
 
-    let p = await fetch("http://localhost:8844/taskplanner/user/register", options);
-    let response = await p.json();
+    let p = await fetch("http://localhost:8844/taskplanner/user/register", options)
+    let response = await p.json()
     console.log(response);
 } 
 
