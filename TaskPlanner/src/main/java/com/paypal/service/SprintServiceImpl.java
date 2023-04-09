@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.paypal.dto.CreateSprintDto;
+import com.paypal.dto.UpdateSprintDescDto;
 import com.paypal.exception.SprintException;
 import com.paypal.exception.TaskException;
 import com.paypal.exception.UserException;
@@ -118,6 +119,38 @@ public class SprintServiceImpl implements SprintService {
 			}
 		}
 		throw new SprintException("A sprint cannot be deleted by someone with anonymous authentication.");
+	}
+
+	@Override
+	public Sprint updateSprintDesc(Integer sprintId, UpdateSprintDescDto dto) throws SprintException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUsername = authentication.getName();
+			User currentUser = urepo.findByEmail(currentUsername).get();
+			if (currentUser.getRole().equals("ROLE_ADMIN")) {
+				Optional<Sprint> targetSprintOpt = srepo.findById(sprintId);
+				if (targetSprintOpt.isPresent()) {
+					Sprint targetSprint = targetSprintOpt.get();
+					targetSprint.setSprintDesc(dto.getSprintDesc());
+					return srepo.save(targetSprint);
+				}
+				throw new SprintException("Invalid sprint id: " + sprintId);
+			} else if (currentUser.getRole().equals("ROLE_USER")) {
+				Optional<Sprint> targetSprintOpt = srepo.findById(sprintId);
+				if (targetSprintOpt.isPresent()) {
+					Sprint targetSprint = targetSprintOpt.get();
+					if (targetSprint.getCreatorId() == currentUser.getUserId()) {
+						targetSprint.setSprintDesc(dto.getSprintDesc());
+						return srepo.save(targetSprint);
+					}
+					throw new SprintException("Apart from admin, only the creator of a sprint can update the sprint.");
+				}
+				throw new SprintException("Invalid sprint id: " + sprintId);
+			} else {
+				throw new SprintException("Apart from admin and user no one else can update a sprint.");
+			}
+		}
+		throw new SprintException("A sprint cannot be updated by someone with anonymous authentication.");
 	}
 
 }

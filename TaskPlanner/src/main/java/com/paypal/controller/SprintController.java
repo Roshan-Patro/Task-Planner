@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.paypal.dto.CreateSprintDto;
+import com.paypal.dto.UpdateSprintDescDto;
 import com.paypal.model.Sprint;
 import com.paypal.model.Task;
 import com.paypal.service.SprintService;
@@ -48,5 +49,11 @@ public class SprintController {
 	public ResponseEntity<Sprint> deleteSprintById(@PathVariable("sprintId") Integer sprintId){
 		Sprint deletedSprint = sservice.deleteSprintById(sprintId);
 		return new ResponseEntity<Sprint>(deletedSprint, HttpStatus.OK);
+	}
+	
+	@PutMapping("/updatedesc/{sprintId}")
+	public ResponseEntity<Sprint> updateSprintDesc(@PathVariable("sprintId") Integer sprintId, @RequestBody UpdateSprintDescDto dto) {
+		Sprint updatedSprint = sservice.updateSprintDesc(sprintId, dto);
+		return new ResponseEntity<Sprint>(updatedSprint, HttpStatus.OK);
 	}
 }
