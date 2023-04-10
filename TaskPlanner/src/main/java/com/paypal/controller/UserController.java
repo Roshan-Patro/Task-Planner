@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.paypal.dto.LoginUserDto;
 import com.paypal.dto.RegisterUserDto;
+import com.paypal.dto.UpdateUserDto;
 import com.paypal.model.Task;
 import com.paypal.model.User;
 import com.paypal.repository.UserRepository;
@@ -72,5 +74,12 @@ public class UserController {
 	public ResponseEntity<User> deleteUserById(@PathVariable("userId") Integer userId){
 		User deletedUser = uservice.deleteUserById(userId);
 		return new ResponseEntity<User>(deletedUser, HttpStatus.OK);
+	}
+	
+	@PutMapping("/update")
+	public ResponseEntity<User> updateUserDetails(@RequestBody UpdateUserDto dto){
+		dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+		User updatedUser = uservice.updateUserDetails(dto);
+		return new ResponseEntity<User>(updatedUser, HttpStatus.OK);
 	}
 }

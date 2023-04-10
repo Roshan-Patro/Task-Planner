@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.paypal.dto.LoginUserDto;
 import com.paypal.dto.RegisterUserDto;
+import com.paypal.dto.UpdateUserDto;
 import com.paypal.exception.TaskException;
 import com.paypal.exception.UserException;
 import com.paypal.model.Sprint;
@@ -97,14 +98,14 @@ public class UserServiceImpl implements UserService {
 				if (targetUserOpt.isPresent()) {
 					User targetUser = targetUserOpt.get();
 					urepo.delete(targetUser);
-					
+
 					// Putting null in place of creator id for all associated sprints
 					List<Sprint> associatedSprints = srepo.getSprintsByCreatorId(userId);
-					for(Sprint sprint : associatedSprints) {
+					for (Sprint sprint : associatedSprints) {
 						sprint.setCreatorId(null);
 						srepo.save(sprint);
 					}
-					
+
 					return targetUser;
 				}
 				throw new UserException("Invalid user id.");
@@ -112,6 +113,48 @@ public class UserServiceImpl implements UserService {
 			throw new UserException("Only an admin can delete a user.");
 		}
 		throw new UserException("A user cannot be deleted by someone with anonymous authentication.");
+
+	}
+
+	@Override
+	public User updateUserDetails(UpdateUserDto dto) throws UserException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUsername = authentication.getName();
+			User currentUser = urepo.findByEmail(currentUsername).get();
+
+			if (currentUser.getRole().equals("ROLE_ADMIN")) {
+				Optional<User> targetUserOpt = urepo.findById(dto.getUserId());
+				if (targetUserOpt.isPresent()) {
+					User targetUser = targetUserOpt.get();
+
+					targetUser.setUserName(dto.getUserName());
+					targetUser.setEmail(dto.getEmail());
+					targetUser.setPassword(dto.getPassword());
+					targetUser.setAddress(dto.getAddress());
+
+					return urepo.save(targetUser);
+
+				}
+				throw new UserException("Invalid user id: " + dto.getUserId());
+			} else if (currentUser.getRole().equals("ROLE_USER")) {
+				if (currentUser.getUserId() == dto.getUserId()) {
+					User targetUser = urepo.findById(dto.getUserId()).get();
+
+					targetUser.setUserName(dto.getUserName());
+					targetUser.setEmail(dto.getEmail());
+					targetUser.setPassword(dto.getPassword());
+					targetUser.setAddress(dto.getAddress());
+
+					return urepo.save(targetUser);
+				}
+				throw new UserException("Apart from admin, the user itself can update its details.");
+			} else {
+				throw new UserException("Apart from admin and user no one else can update any user details.");
+			}
+		}
+
+		throw new UserException("User details can be updated by someone with anonymous authentication.");
 
 	}
 }
