@@ -13,6 +13,7 @@ import com.paypal.dto.LoginUserDto;
 import com.paypal.dto.RegisterUserDto;
 import com.paypal.exception.TaskException;
 import com.paypal.exception.UserException;
+import com.paypal.model.Sprint;
 import com.paypal.model.Task;
 import com.paypal.model.User;
 import com.paypal.repository.SprintRepository;
@@ -96,6 +97,14 @@ public class UserServiceImpl implements UserService {
 				if (targetUserOpt.isPresent()) {
 					User targetUser = targetUserOpt.get();
 					urepo.delete(targetUser);
+					
+					// Putting null in place of creator id for all associated sprints
+					List<Sprint> associatedSprints = srepo.getSprintsByCreatorId(userId);
+					for(Sprint sprint : associatedSprints) {
+						sprint.setCreatorId(null);
+						srepo.save(sprint);
+					}
+					
 					return targetUser;
 				}
 				throw new UserException("Invalid user id.");
