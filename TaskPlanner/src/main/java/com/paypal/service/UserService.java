@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.paypal.dto.LoginUserDto;
 import com.paypal.dto.RegisterUserDto;
+import com.paypal.dto.UpdateUserDto;
 import com.paypal.exception.TaskException;
 import com.paypal.exception.UserException;
 import com.paypal.model.Task;
@@ -18,4 +19,7 @@ public interface UserService {
 	
 	// Only an admin can delete a user
 	public User deleteUserById(Integer userId) throws UserException;
+	
+	// Only an admin or the user itself can update the details
+	public User updateUserDetails(UpdateUserDto dto) throws UserException;
 }
