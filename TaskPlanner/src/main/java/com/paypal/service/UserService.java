@@ -22,4 +22,7 @@ public interface UserService {
 	
 	// Only an admin or the user itself can update the details
 	public User updateUserDetails(UpdateUserDto dto) throws UserException;
+	
+	// Only admin can update an user's role
+	public User updateUserRole(Integer userId, String newRole) throws UserException;
 }

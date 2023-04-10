@@ -157,4 +157,24 @@ public class UserServiceImpl implements UserService {
 		throw new UserException("User details can be updated by someone with anonymous authentication.");
 
 	}
+
+	@Override
+	public User updateUserRole(Integer userId, String newRole) throws UserException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUserName = authentication.getName();
+			User currentUser = urepo.findByEmail(currentUserName).get();
+			if(currentUser.getRole().equals("ROLE_ADMIN")) {
+				Optional<User> targetUserOpt = urepo.findById(userId);
+				if(targetUserOpt.isPresent()) {
+					User targetUser = targetUserOpt.get();
+					targetUser.setRole("ROLE_"+newRole.toUpperCase());
+					return urepo.save(targetUser);
+				}
+				throw new UserException("Invalid user id: "+userId);
+			}
+			throw new UserException("Only admin can update an user's role.");
+		}
+		throw new UserException("User role cannot be updated by someone with anonymous authentication.");
+	}
 }
