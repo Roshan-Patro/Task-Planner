@@ -21,4 +21,25 @@ let userRegistration = async () => {
     console.log(response);
 } 
 
-userRegistration();
+// userRegistration();
+
+/* Login user */
+let userLogin = async () => {
+    let options ={
+        method: "GET",
+        headers: {
+            'Authorization': `Basic ${btoa(`${"patro.uttam@gmail.com"}:${"uttam@1997"}`)}`
+        }
+    }
+
+    let p = await fetch("http://localhost:8844/taskplanner/user/login", options)
+    if(p.ok){
+        let jwt=p.headers.get('Authorization')
+        console.log("jwt: "+jwt);
+        let response = await p.json()
+        console.log(response);
+    }
+}
+userLogin();
+
+/* Create a task */
