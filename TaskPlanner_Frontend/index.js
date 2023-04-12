@@ -1,5 +1,8 @@
 /* Making all APIs ready */
 
+let user=""
+let jwt=localStorage.getItem("jwt") || ""
+
 /* Register an user */
 let userRegistration = async () => {
     let options = {
@@ -36,10 +39,40 @@ let userLogin = async () => {
     if(p.ok){
         let jwt=p.headers.get('Authorization')
         console.log("jwt: "+jwt);
+        localStorage.setItem("jwt",jwt)
         let response = await p.json()
         console.log(response);
     }
 }
-userLogin();
+// userLogin();
 
 /* Create a task */
+let createTask = async () => {
+
+    let obj = {
+        "taskDesc": "Needed to fix the payment refund API.",
+        "startDate": "2023-05-03",
+        "endDate": "2023-07-04",
+        "type": "BUG",
+        "priority": "HIGH"
+    }
+
+    let options = {
+        method: "POST",
+        body:JSON.stringify(obj),
+        headers:{
+            'Content-Type':'application/json',
+            "Authorization":`Bearer ${jwt}`
+          }
+    }
+
+    let p = await fetch("http://localhost:8844/taskplanner/task/create", options)
+    if(p.ok){
+        let response = await p.json()
+        console.log(response);
+    }
+}
+createTask();
+
+
+
