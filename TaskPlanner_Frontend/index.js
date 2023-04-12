@@ -31,7 +31,7 @@ let userLogin = async () => {
     let options ={
         method: "GET",
         headers: {
-            'Authorization': `Basic ${btoa(`${"patro.uttam@gmail.com"}:${"uttam@1997"}`)}`
+            'Authorization': `Basic ${btoa(`${"patro.aman@gmail.com"}:${"uttam@1997"}`)}`
         }
     }
 
@@ -46,11 +46,33 @@ let userLogin = async () => {
 }
 // userLogin();
 
+/* Logout user */
+let logout = async () => {
+
+    let options = {
+        method:'GET',
+        headers:{
+        "Authorization":`Bearer ${jwt}`
+        }
+    }
+
+    let p = await fetch("http://localhost:8844/logout", options)
+    if(p.ok){
+        // let response = await p.json()
+        // console.log(response)
+        // user=""
+        // jwt=""
+        localStorage.removeItem("jwt")
+        console.log("Logged out...");
+    }
+}
+// logout();
+
 /* Create a task */
 let createTask = async () => {
 
     let obj = {
-        "taskDesc": "Needed to fix the payment refund API.",
+        "taskDesc": "Needed to fix the add-product-to-cart API.",
         "startDate": "2023-05-03",
         "endDate": "2023-07-04",
         "type": "BUG",
