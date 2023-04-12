@@ -72,19 +72,43 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<Task> getAssignedTasks(Integer userId) throws UserException, TaskException {
-		Optional<User> userOpt = urepo.findById(userId);
 
-		if (userOpt.isPresent()) {
-			User existingUser = userOpt.get();
-			List<Task> assignedTasks = existingUser.getAssignedTasks();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUserName = authentication.getName();
+			User currentUser = urepo.findByEmail(currentUserName).get();
+			if (currentUser.getRole().equals("ROLE_ADMIN")) {
+				Optional<User> targetUserOpt = urepo.findById(userId);
+				if (targetUserOpt.isPresent()) {
+					User targetUser = targetUserOpt.get();
+					List<Task> assignedTasks = targetUser.getAssignedTasks();
 
-			if (!assignedTasks.isEmpty()) {
-				return assignedTasks;
+					if (!assignedTasks.isEmpty()) {
+						return assignedTasks;
+					}
+					throw new TaskException(
+							"No assigned task yet with user: " + targetUser.getUserName() + " (Id: " + userId + ")");
+				}
+				throw new UserException("No user with id: " + userId + " found in the system...!");
+			} else if (currentUser.getRole().equals("ROLE_USER")) {
+				if (currentUser.getUserId() == userId) {
+					List<Task> assignedTasks = currentUser.getAssignedTasks();
+
+					if (!assignedTasks.isEmpty()) {
+						return assignedTasks;
+					}
+					throw new TaskException(
+							"No assigned task yet with user: " + currentUser.getUserName() + " (Id: " + userId + ")");
+				}
+				throw new UserException("Apart from admin, only the assignee can retrieve all assigned tasks.");
+			} else {
+				throw new UserException(
+						"Apart from admin and user no one else can retrieve all assigned tasks of an user.");
 			}
-			throw new TaskException(
-					"No assigned task yet with user: " + existingUser.getUserName() + " (Id: " + userId + ")");
 		}
-		throw new UserException("No user with id: " + userId + " found in the system...!");
+		throw new UserException(
+				"All assigned tasks of an user cannot be retrieved by someone with anonymous authentication.");
+
 	}
 
 	@Override
@@ -161,17 +185,17 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User updateUserRole(Integer userId, String newRole) throws UserException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if(!(authentication instanceof AnonymousAuthenticationToken)) {
+		if (!(authentication instanceof AnonymousAuthenticationToken)) {
 			String currentUserName = authentication.getName();
 			User currentUser = urepo.findByEmail(currentUserName).get();
-			if(currentUser.getRole().equals("ROLE_ADMIN")) {
+			if (currentUser.getRole().equals("ROLE_ADMIN")) {
 				Optional<User> targetUserOpt = urepo.findById(userId);
-				if(targetUserOpt.isPresent()) {
+				if (targetUserOpt.isPresent()) {
 					User targetUser = targetUserOpt.get();
-					targetUser.setRole("ROLE_"+newRole.toUpperCase());
+					targetUser.setRole("ROLE_" + newRole.toUpperCase());
 					return urepo.save(targetUser);
 				}
-				throw new UserException("Invalid user id: "+userId);
+				throw new UserException("Invalid user id: " + userId);
 			}
 			throw new UserException("Only admin can update an user's role.");
 		}
