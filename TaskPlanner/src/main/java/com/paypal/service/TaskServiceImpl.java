@@ -46,20 +46,20 @@ public class TaskServiceImpl implements TaskService {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String currentUserName = authentication.getName();
 		User existingUser = urepo.findByEmail(currentUserName).get();
-		
+
 //		if (userOpt.isPresent()) {
-			Task newTask = new Task();
-			newTask.setTaskDesc(dto.getTaskDesc());
-			newTask.setCreatorId(existingUser.getUserId());
-			newTask.setStartDate(LocalDate.parse(dto.getStartDate()));
-			newTask.setEndDate(LocalDate.parse(dto.getEndDate()));
-			newTask.setType(Type.valueOf(dto.getType().toUpperCase()));
-			newTask.setPriority(Priority.valueOf(dto.getPriority().toUpperCase()));
-			newTask.setStatus(Status.PENDING);
+		Task newTask = new Task();
+		newTask.setTaskDesc(dto.getTaskDesc());
+		newTask.setCreatorId(existingUser.getUserId());
+		newTask.setStartDate(LocalDate.parse(dto.getStartDate()));
+		newTask.setEndDate(LocalDate.parse(dto.getEndDate()));
+		newTask.setType(Type.valueOf(dto.getType().toUpperCase()));
+		newTask.setPriority(Priority.valueOf(dto.getPriority().toUpperCase()));
+		newTask.setStatus(Status.PENDING);
 
-			Task savedTask = trepo.save(newTask);
+		Task savedTask = trepo.save(newTask);
 
-			return savedTask;
+		return savedTask;
 //		}
 //		throw new UserException("No user with id: " + dto.getCreaterId()
 //				+ " found in the system. Please, try with a different creater id.");
@@ -138,7 +138,7 @@ public class TaskServiceImpl implements TaskService {
 			Optional<Sprint> sprintOpt = srepo.findById(sprintId);
 			if (sprintOpt.isPresent()) {
 
-				if (existingTask.getSprint()!=null && sprintId == existingTask.getSprint().getSprintId()) {
+				if (existingTask.getSprint() != null && sprintId == existingTask.getSprint().getSprintId()) {
 					throw new TaskException("Task is already added to the sprint: " + sprintId);
 				}
 
@@ -168,27 +168,60 @@ public class TaskServiceImpl implements TaskService {
 
 	@Override
 	public Task changeStatusOfTask(Integer taskId, String newStatus) throws TaskException {
-		Optional<Task> taskOpt = trepo.findById(taskId);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUserName = authentication.getName();
+			User currentUser = urepo.findByEmail(currentUserName).get();
+			if (currentUser.getRole().equals("ROLE_ADMIN")) {
+				Optional<Task> taskOpt = trepo.findById(taskId);
+				if (taskOpt.isPresent()) {
+					Task targetTask = taskOpt.get();
 
-		if (taskOpt.isPresent()) {
-			Task existingTask = taskOpt.get();
+					if (!newStatus.toUpperCase().equals("PENDING") && !newStatus.toUpperCase().equals("COMPLETED")
+							&& !newStatus.toUpperCase().equals("CANCELED")) {
+						throw new TaskException("Please enter a valid status. (PENDING / COMPLETED / CANCELED)");
+					}
 
-			if (!newStatus.toUpperCase().equals("PENDING") && !newStatus.toUpperCase().equals("COMPLETED")
-					&& !newStatus.toUpperCase().equals("CANCELED")) {
-				throw new TaskException("Please enter a valid status. (PENDING / COMPLETED / CANCELED)");
+					if (newStatus.toUpperCase().equals(targetTask.getStatus().toString())) {
+						throw new TaskException("The status of the task is already: " + newStatus);
+					}
+
+					targetTask.setStatus(Status.valueOf(newStatus.toUpperCase()));
+
+					Task updatedTask = trepo.save(targetTask);
+
+					return updatedTask;
+				}
+				throw new TaskException("No task found with id: " + taskId);
+			} else if (currentUser.getRole().equals("ROLE_USER")) {
+				Optional<Task> taskOpt = trepo.findById(taskId);
+				if (taskOpt.isPresent()) {
+					Task targetTask = taskOpt.get();
+					if (targetTask.getAssignee()!=null && targetTask.getAssignee().getUserId() == currentUser.getUserId()) {
+						if (!newStatus.toUpperCase().equals("PENDING") && !newStatus.toUpperCase().equals("COMPLETED")
+								&& !newStatus.toUpperCase().equals("CANCELED")) {
+							throw new TaskException("Please enter a valid status. (PENDING / COMPLETED / CANCELED)");
+						}
+						if (newStatus.toUpperCase().equals(targetTask.getStatus().toString())) {
+							throw new TaskException("The status of the task is already: " + newStatus);
+						}
+
+						targetTask.setStatus(Status.valueOf(newStatus.toUpperCase()));
+
+						Task updatedTask = trepo.save(targetTask);
+
+						return updatedTask;
+					}
+					throw new TaskException("Apart from admin only the assignee of a task can change its status.");
+				}
+				throw new TaskException("No task found with id: " + taskId);
+
+			} else {
+				throw new TaskException("Apart from admin and user no one else can change status of a task.");
 			}
-
-			if (newStatus.toUpperCase().equals(existingTask.getStatus().toString())) {
-				throw new TaskException("The status of the task is already: " + newStatus);
-			}
-
-			existingTask.setStatus(Status.valueOf(newStatus.toUpperCase()));
-
-			Task updatedTask = trepo.save(existingTask);
-
-			return updatedTask;
 		}
-		throw new TaskException("No task found with id: " + taskId);
+		throw new TaskException("Status of task cannot be changed by someone with anonymous authentication.");
+
 	}
 
 	@Override
@@ -397,15 +430,14 @@ public class TaskServiceImpl implements TaskService {
 				if (taskOpt.isPresent()) {
 					Task existingTask = taskOpt.get();
 					User createrOfTask = urepo.findById(existingTask.getCreatorId()).get();
-					if(createrOfTask.getEmail().equals(existingUser.getEmail())) {
+					if (createrOfTask.getEmail().equals(existingUser.getEmail())) {
 						trepo.delete(existingTask);
 						return existingTask;
 					}
 					throw new TaskException("Apart from admin, only the creator of a task can delete the task.");
 				}
 				throw new TaskException("Invalid task id: " + taskId);
-			}
-			else {
+			} else {
 				throw new TaskException("Apart from Admin and User no one else can delete a task.");
 			}
 		}
