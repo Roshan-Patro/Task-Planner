@@ -16,7 +16,7 @@ public class AppConfig {
 	public SecurityFilterChain sprintSecurityConfiguration(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests()
 		.requestMatchers(HttpMethod.POST, "taskplanner/user/register").permitAll()
-		.requestMatchers(HttpMethod.PUT, "/taskplanner/task/changesprint/**").hasRole("ADMIN")
+//		.requestMatchers(HttpMethod.PUT, "/taskplanner/task/changesprint/**").hasRole("ADMIN")
 		.anyRequest().authenticated().and()
 		.csrf().disable()
 		.addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)

@@ -303,7 +303,7 @@ public class TaskServiceImpl implements TaskService {
 
 	@Override
 	public Task changeEndDateOfTask(Integer taskId, String newEndDate) throws TaskException {
-		
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (!(authentication instanceof AnonymousAuthenticationToken)) {
 			String currentUserName = authentication.getName();
@@ -376,68 +376,145 @@ public class TaskServiceImpl implements TaskService {
 
 	@Override
 	public Task updateTask(UpdateTaskDto dto) throws TaskException {
-		Optional<Task> taskOpt = trepo.findById(dto.getTaskId());
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUserName = authentication.getName();
+			User currentUser = urepo.findByEmail(currentUserName).get();
+			if (currentUser.getRole().equals("ROLE_ADMIN")) {
+				Optional<Task> taskOpt = trepo.findById(dto.getTaskId());
 
-		if (taskOpt.isPresent()) {
-			Task existingTask = taskOpt.get();
+				if (taskOpt.isPresent()) {
+					Task existingTask = taskOpt.get();
 
-			existingTask.setTaskDesc(dto.getTaskDesc());
-			existingTask.setStartDate(LocalDate.parse(dto.getStartDate()));
-			existingTask.setEndDate(LocalDate.parse(dto.getEndDate()));
-			existingTask.setType(Type.valueOf(dto.getType().toUpperCase()));
-			existingTask.setPriority(Priority.valueOf(dto.getPriority().toUpperCase()));
-			existingTask.setStatus(Status.valueOf(dto.getStatus().toUpperCase()));
+					existingTask.setTaskDesc(dto.getTaskDesc());
+					existingTask.setStartDate(LocalDate.parse(dto.getStartDate()));
+					existingTask.setEndDate(LocalDate.parse(dto.getEndDate()));
+					existingTask.setType(Type.valueOf(dto.getType().toUpperCase()));
+					existingTask.setPriority(Priority.valueOf(dto.getPriority().toUpperCase()));
+					existingTask.setStatus(Status.valueOf(dto.getStatus().toUpperCase()));
 
-			// Updating assignee
-			Optional<User> userOpt = urepo.findById(dto.getNewAssigneeId());
-			if (userOpt.isPresent()) {
-				if (existingTask.getAssignee() != null
-						&& (existingTask.getAssignee().getUserId() != dto.getNewAssigneeId())) {
-					User previousAssignee = existingTask.getAssignee();
+					// Updating assignee
+					Optional<User> userOpt = urepo.findById(dto.getNewAssigneeId());
+					if (userOpt.isPresent()) {
+						if (existingTask.getAssignee() != null
+								&& (existingTask.getAssignee().getUserId() != dto.getNewAssigneeId())) {
+							User previousAssignee = existingTask.getAssignee();
 
-					previousAssignee.getAssignedTasks().removeIf(obj -> obj.getTaskId() == existingTask.getTaskId());
+							previousAssignee.getAssignedTasks()
+									.removeIf(obj -> obj.getTaskId() == existingTask.getTaskId());
 
-					existingTask.setAssignee(userOpt.get());
+							existingTask.setAssignee(userOpt.get());
 
-					userOpt.get().getAssignedTasks().add(existingTask);
-				} else if (existingTask.getAssignee() == null) {
+							userOpt.get().getAssignedTasks().add(existingTask);
+						} else if (existingTask.getAssignee() == null) {
 
-					existingTask.setAssignee(userOpt.get());
+							existingTask.setAssignee(userOpt.get());
 
-					userOpt.get().getAssignedTasks().add(existingTask);
+							userOpt.get().getAssignedTasks().add(existingTask);
+						}
+					} else {
+						throw new TaskException("No user found with id: " + dto.getNewAssigneeId() + " to assign.");
+					}
+
+					// Updating sprint
+					Optional<Sprint> sprintOpt = srepo.findById(dto.getNewSprintId());
+					if (sprintOpt.isPresent()) {
+						if (existingTask.getSprint() != null
+								&& (existingTask.getSprint().getSprintId() != dto.getNewSprintId())) {
+							Sprint previousSprint = existingTask.getSprint();
+
+							previousSprint.getTaskList().removeIf(obj -> obj.getTaskId() == existingTask.getTaskId());
+
+							existingTask.setSprint(sprintOpt.get());
+
+							sprintOpt.get().getTaskList().add(existingTask);
+						} else if (existingTask.getSprint() == null) {
+
+							existingTask.setSprint(sprintOpt.get());
+
+							sprintOpt.get().getTaskList().add(existingTask);
+						}
+					} else {
+						throw new TaskException("No sprint found with id: " + dto.getNewSprintId() + " to add.");
+					}
+
+					Task updatedTask = trepo.save(existingTask);
+
+					return updatedTask;
+
 				}
-			} else {
-				throw new TaskException("No user found with id: " + dto.getNewAssigneeId() + " to assign.");
-			}
+				throw new TaskException("No task found with id: " + dto.getTaskId());
+			} else if (currentUser.getRole().equals("ROLE_USER")) {
+				Optional<Task> taskOpt = trepo.findById(dto.getTaskId());
 
-			// Updating sprint
-			Optional<Sprint> sprintOpt = srepo.findById(dto.getNewSprintId());
-			if (sprintOpt.isPresent()) {
-				if (existingTask.getSprint() != null
-						&& (existingTask.getSprint().getSprintId() != dto.getNewSprintId())) {
-					Sprint previousSprint = existingTask.getSprint();
+				if (taskOpt.isPresent()) {
+					Task existingTask = taskOpt.get();
+					if (currentUser.getUserId() == existingTask.getCreatorId()) {
+						existingTask.setTaskDesc(dto.getTaskDesc());
+						existingTask.setStartDate(LocalDate.parse(dto.getStartDate()));
+						existingTask.setEndDate(LocalDate.parse(dto.getEndDate()));
+						existingTask.setType(Type.valueOf(dto.getType().toUpperCase()));
+						existingTask.setPriority(Priority.valueOf(dto.getPriority().toUpperCase()));
+						existingTask.setStatus(Status.valueOf(dto.getStatus().toUpperCase()));
 
-					previousSprint.getTaskList().removeIf(obj -> obj.getTaskId() == existingTask.getTaskId());
+						// Updating assignee
+						Optional<User> userOpt = urepo.findById(dto.getNewAssigneeId());
+						if (userOpt.isPresent()) {
+							if (existingTask.getAssignee() != null
+									&& (existingTask.getAssignee().getUserId() != dto.getNewAssigneeId())) {
+								User previousAssignee = existingTask.getAssignee();
 
-					existingTask.setSprint(sprintOpt.get());
+								previousAssignee.getAssignedTasks()
+										.removeIf(obj -> obj.getTaskId() == existingTask.getTaskId());
 
-					sprintOpt.get().getTaskList().add(existingTask);
-				} else if (existingTask.getSprint() == null) {
+								existingTask.setAssignee(userOpt.get());
 
-					existingTask.setSprint(sprintOpt.get());
+								userOpt.get().getAssignedTasks().add(existingTask);
+							} else if (existingTask.getAssignee() == null) {
 
-					sprintOpt.get().getTaskList().add(existingTask);
+								existingTask.setAssignee(userOpt.get());
+
+								userOpt.get().getAssignedTasks().add(existingTask);
+							}
+						} else {
+							throw new TaskException("No user found with id: " + dto.getNewAssigneeId() + " to assign.");
+						}
+
+						// Updating sprint
+						Optional<Sprint> sprintOpt = srepo.findById(dto.getNewSprintId());
+						if (sprintOpt.isPresent()) {
+							if (existingTask.getSprint() != null
+									&& (existingTask.getSprint().getSprintId() != dto.getNewSprintId())) {
+								Sprint previousSprint = existingTask.getSprint();
+
+								previousSprint.getTaskList()
+										.removeIf(obj -> obj.getTaskId() == existingTask.getTaskId());
+
+								existingTask.setSprint(sprintOpt.get());
+
+								sprintOpt.get().getTaskList().add(existingTask);
+							} else if (existingTask.getSprint() == null) {
+
+								existingTask.setSprint(sprintOpt.get());
+
+								sprintOpt.get().getTaskList().add(existingTask);
+							}
+						} else {
+							throw new TaskException("No sprint found with id: " + dto.getNewSprintId() + " to add.");
+						}
+
+						Task updatedTask = trepo.save(existingTask);
+
+						return updatedTask;
+					}
+					throw new TaskException("Apart from admin only creator of a task can update the task.");
 				}
+				throw new TaskException("No task found with id: " + dto.getTaskId());
 			} else {
-				throw new TaskException("No sprint found with id: " + dto.getNewSprintId() + " to add.");
+				throw new TaskException("Apart from admin and user no one else can update a task.");
 			}
-
-			Task updatedTask = trepo.save(existingTask);
-
-			return updatedTask;
-
 		}
-		throw new TaskException("No task found with id: " + dto.getTaskId());
+		throw new TaskException("A task cannot be updated by someone with anonymous authentication.");
 	}
 
 	@Override
