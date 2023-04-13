@@ -303,22 +303,50 @@ public class TaskServiceImpl implements TaskService {
 
 	@Override
 	public Task changeEndDateOfTask(Integer taskId, String newEndDate) throws TaskException {
-		Optional<Task> taskOpt = trepo.findById(taskId);
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUserName = authentication.getName();
+			User currentUser = urepo.findByEmail(currentUserName).get();
+			if (currentUser.getRole().equals("ROLE_ADMIN")) {
+				Optional<Task> taskOpt = trepo.findById(taskId);
 
-		if (taskOpt.isPresent()) {
-			Task existingTask = taskOpt.get();
+				if (taskOpt.isPresent()) {
+					Task targetTask = taskOpt.get();
 
-			if (existingTask.getEndDate().isEqual(LocalDate.parse(newEndDate))) {
-				throw new TaskException("The end date is already: " + LocalDate.parse(newEndDate));
+					if (targetTask.getEndDate().isEqual(LocalDate.parse(newEndDate))) {
+						throw new TaskException("The end date is already: " + LocalDate.parse(newEndDate));
+					}
+
+					targetTask.setEndDate(LocalDate.parse(newEndDate));
+					Task updatedTask = trepo.save(targetTask);
+
+					return updatedTask;
+				} else {
+					throw new TaskException("No task found with id: " + taskId);
+				}
+			} else if (currentUser.getRole().equals("ROLE_USER")) {
+				Optional<Task> taskOpt = trepo.findById(taskId);
+				if (taskOpt.isPresent()) {
+					Task targetTask = taskOpt.get();
+					if (targetTask.getCreatorId() == currentUser.getUserId()) {
+						if (targetTask.getEndDate().isEqual(LocalDate.parse(newEndDate))) {
+							throw new TaskException("The end date is already: " + LocalDate.parse(newEndDate));
+						}
+
+						targetTask.setEndDate(LocalDate.parse(newEndDate));
+						Task updatedTask = trepo.save(targetTask);
+
+						return updatedTask;
+					}
+					throw new TaskException("Apart from admin only the creator of a task can change its end date.");
+				}
+				throw new TaskException("No task found with id: " + taskId);
+			} else {
+				throw new TaskException("Apart from admin and user no one else can change end date of a task.");
 			}
-
-			existingTask.setEndDate(LocalDate.parse(newEndDate));
-			Task updatedTask = trepo.save(existingTask);
-
-			return updatedTask;
-		} else {
-			throw new TaskException("No task found with id: " + taskId);
 		}
+		throw new TaskException("End date of task cannot be changed by someone with anonymous authentication.");
 	}
 
 	@Override
