@@ -138,7 +138,7 @@ public class TaskServiceImpl implements TaskService {
 			Optional<Sprint> sprintOpt = srepo.findById(sprintId);
 			if (sprintOpt.isPresent()) {
 
-				if (sprintId == existingTask.getSprint().getSprintId()) {
+				if (existingTask.getSprint()!=null && sprintId == existingTask.getSprint().getSprintId()) {
 					throw new TaskException("Task is already added to the sprint: " + sprintId);
 				}
 
