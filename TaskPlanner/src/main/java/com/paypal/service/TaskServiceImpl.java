@@ -197,7 +197,8 @@ public class TaskServiceImpl implements TaskService {
 				Optional<Task> taskOpt = trepo.findById(taskId);
 				if (taskOpt.isPresent()) {
 					Task targetTask = taskOpt.get();
-					if (targetTask.getAssignee()!=null && targetTask.getAssignee().getUserId() == currentUser.getUserId()) {
+					if (targetTask.getAssignee() != null
+							&& targetTask.getAssignee().getUserId() == currentUser.getUserId()) {
 						if (!newStatus.toUpperCase().equals("PENDING") && !newStatus.toUpperCase().equals("COMPLETED")
 								&& !newStatus.toUpperCase().equals("CANCELED")) {
 							throw new TaskException("Please enter a valid status. (PENDING / COMPLETED / CANCELED)");
@@ -250,24 +251,54 @@ public class TaskServiceImpl implements TaskService {
 		throw new TaskException("No task found with id: " + taskId);
 	}
 
+	// Only admin and creator of a task can change start date of the task
 	@Override
 	public Task changeStartDateOfTask(Integer taskId, String newStartDate) throws TaskException {
-		Optional<Task> taskOpt = trepo.findById(taskId);
 
-		if (taskOpt.isPresent()) {
-			Task existingTask = taskOpt.get();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUserName = authentication.getName();
+			User currentUser = urepo.findByEmail(currentUserName).get();
+			if (currentUser.getRole().equals("ROLE_ADMIN")) {
+				Optional<Task> taskOpt = trepo.findById(taskId);
 
-			if (existingTask.getStartDate().isEqual(LocalDate.parse(newStartDate))) {
-				throw new TaskException("The start date is already: " + LocalDate.parse(newStartDate));
+				if (taskOpt.isPresent()) {
+					Task targetTask = taskOpt.get();
+
+					if (targetTask.getStartDate().isEqual(LocalDate.parse(newStartDate))) {
+						throw new TaskException("The start date is already: " + LocalDate.parse(newStartDate));
+					}
+
+					targetTask.setStartDate(LocalDate.parse(newStartDate));
+					Task updatedTask = trepo.save(targetTask);
+
+					return updatedTask;
+				} else {
+					throw new TaskException("No task found with id: " + taskId);
+				}
+			} else if (currentUser.getRole().equals("ROLE_USER")) {
+				Optional<Task> taskOpt = trepo.findById(taskId);
+				if (taskOpt.isPresent()) {
+					Task targetTask = taskOpt.get();
+					if (targetTask.getCreatorId() == currentUser.getUserId()) {
+						if (targetTask.getStartDate().isEqual(LocalDate.parse(newStartDate))) {
+							throw new TaskException("The start date is already: " + LocalDate.parse(newStartDate));
+						}
+
+						targetTask.setStartDate(LocalDate.parse(newStartDate));
+						Task updatedTask = trepo.save(targetTask);
+
+						return updatedTask;
+					}
+					throw new TaskException("Apart from admin only the creator of a task can change its start date.");
+				}
+				throw new TaskException("No task found with id: " + taskId);
+			} else {
+				throw new TaskException("Apart from admin and user no one else can change start date of a task.");
 			}
-
-			existingTask.setStartDate(LocalDate.parse(newStartDate));
-			Task updatedTask = trepo.save(existingTask);
-
-			return updatedTask;
-		} else {
-			throw new TaskException("No task found with id: " + taskId);
 		}
+		throw new TaskException("Start date of task cannot be changed by someone with anonymous authentication.");
+
 	}
 
 	@Override
