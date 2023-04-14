@@ -14,4 +14,11 @@ This project contains RESTful APIs to perform all relevant operations for a Task
 - Admins can add tasks to sprints and assign tasks to users.
 - Admins can update user, task, and sprint details.
 - Admins can delete users, tasks, and sprints.
+- Admins can update the role (Admin/User) of a user.
 ### User Features:
+- Users can register and log in with valid credentials.
+- Users can retrieve their own assigned tasks.
+- Users can update their details.
+- Users can create tasks and assign them to other users.
+- Users can change the assignee, sprint, start date, and end date of a task.
+- Users can delete tasks created by them.
