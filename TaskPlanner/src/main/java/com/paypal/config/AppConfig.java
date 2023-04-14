@@ -18,6 +18,7 @@ public class AppConfig {
 		.requestMatchers(HttpMethod.POST, "taskplanner/user/register").permitAll()
 //		.requestMatchers(HttpMethod.PUT, "/taskplanner/task/changesprint/**").hasRole("ADMIN")
 		.requestMatchers(HttpMethod.GET, "/taskplanner/task/alltasks/**").hasRole("ADMIN")
+		.requestMatchers(HttpMethod.GET, "/taskplanner/sprint/addedtasks/**").hasRole("ADMIN")
 		.anyRequest().authenticated().and()
 		.csrf().disable()
 		.addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
