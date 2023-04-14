@@ -26,6 +26,7 @@ This project contains RESTful APIs to perform all relevant operations for a Task
 The whole application with all the endpoints is protected and secured with Spring Security. With Spring Security, the authentication and authorization mechanisms are made robust using JSON Web Token to ensure that the end users get access to the functionalities they are authorized for.
 
 ## Project Structure
+![Task-Planner-Project_Structure](https://user-images.githubusercontent.com/107461385/232118428-feccb72d-0c90-423e-bf9d-b02dc6f3b851.PNG)
 ## Technologies and Tools Used
 - Java
 - Spring Framework
