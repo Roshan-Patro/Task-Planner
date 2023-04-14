@@ -22,3 +22,5 @@ This project contains RESTful APIs to perform all relevant operations for a Task
 - Users can create tasks and assign them to other users.
 - Users can change the assignee, sprint, start date, and end date of a task.
 - Users can delete tasks created by them.
+
+The whole application with all the endpoints is protected and secured with Spring Security. With Spring Security, the authentication and authorization mechanisms are made robust using JSON Web Token to ensure that the end users get access to the functionalities they are authorized for.  
