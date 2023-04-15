@@ -34,6 +34,7 @@ The whole application with all the endpoints is protected and secured with Sprin
 - Java
 - Spring Framework
 - Spring Boot
+- Spring Security
 - Spring Data JPA
 - Hibernate
 - SQL
