@@ -25,7 +25,7 @@ This project contains RESTful APIs to perform all relevant operations for a Task
 - Users can change the assignee, sprint, start date, and end date of a task.
 - Users can delete tasks created by them.
 
-The whole application with all the endpoints is protected and secured with Spring Security. With Spring Security, the authentication and authorization mechanisms are made robust using JSON Web Token to ensure that the end users get access to the functionalities they are authorized for.
+The whole application with all the endpoints is protected and secured with ***Spring Security***. With ***Spring Security***, the authentication and authorization mechanisms are made robust using ***JSON Web Token (JWT)*** to ensure that the end users get access to the functionalities they are authorized for.
 
 ## Project Structure
 ![Task-Planner-Project_Structure](https://user-images.githubusercontent.com/107461385/232118428-feccb72d-0c90-423e-bf9d-b02dc6f3b851.PNG)
@@ -111,6 +111,18 @@ spring.datasource.password=${DB_PASSWORD:Patro@1997}
 #ORM s/w specific properties
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+```
+
+- All endpoints accept and return ***JSON*** data.
+- Example:
+```
+{
+    "userName": "Roshan Patro",
+    "email": "patro.roshan1997@gmail.com",
+    "password": "Patro@1997",
+    "address": "Odisha",
+    "role": "user"
+}
 ```
 
 <!-- ## SQL Queries -->
