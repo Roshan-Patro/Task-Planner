@@ -93,6 +93,6 @@ http://localhost:8844/swagger-ui/index.html
 
 <!-- ## SQL Queries -->
 
-## Feedback
-
+## Feedback✍️
+I would indeed appreciate your feedback and suggestions if any. Each single one of them matters ❣️. Please, let me know your feedback, suggestions, or queries through my LinkedIn. [Let's connect...](https://www.linkedin.com/in/t-roshan-kumar-patro/):smiley:
 
