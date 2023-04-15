@@ -42,7 +42,7 @@ public class User {
 //	private List<Sprint> createdSprints;
 
 	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "assignee")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "assignee") // Bidirectional
 	private List<Task> assignedTasks;
 	
 	private String role;
