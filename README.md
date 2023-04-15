@@ -72,6 +72,13 @@ The whole application with all the endpoints is protected and secured with Sprin
 - Get all existing tasks with pagination
 - Delete a task by id
 
+### Sprint Module - Services
+- Create a sprint
+- Add a task to a sprint
+- Get added tasks of a sprint
+- Delete a sprint by id
+- Update a sprint description
+
 <!-- ## API Documentation -->
 
 ## API Root Endpoint
