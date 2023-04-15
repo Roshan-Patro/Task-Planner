@@ -16,7 +16,6 @@ public class AppConfig {
 	public SecurityFilterChain sprintSecurityConfiguration(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests()
 		.requestMatchers(HttpMethod.POST, "taskplanner/user/register").permitAll()
-//		.requestMatchers(HttpMethod.PUT, "/taskplanner/task/changesprint/**").hasRole("ADMIN")
 		.requestMatchers(HttpMethod.GET, "/taskplanner/task/alltasks/**").hasRole("ADMIN")
 		.requestMatchers(HttpMethod.GET, "/taskplanner/sprint/addedtasks/**").hasRole("ADMIN")
 		.anyRequest().authenticated().and()
@@ -24,6 +23,8 @@ public class AppConfig {
 		.addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
 		.addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
 		.formLogin().and().httpBasic();
+		
+//		http.cors();
 		
 		return http.build();
 	}
