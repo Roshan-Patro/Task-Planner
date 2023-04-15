@@ -1,6 +1,8 @@
-# Task-Planner RESTful Web Services
+<h1 align="center">Task-Planner RESTful Web Services</h1>
 
+<p align="center">
 <img src="https://m.media-amazon.com/images/I/71rbZuW4zJL._SX425_.jpg" width="380px" height="350px">
+</p>
 
 <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png" width="100%">
 
