@@ -44,6 +44,19 @@ The whole application with all the endpoints is protected and secured with Sprin
 
 ## ER Diagram
 
+## Modules and Services
+- User Module
+- Task Module
+- Sprint Module
+
+### User Module - Services
+- Register a user
+- Get logged-in user details
+- Get assigned tasks of a user
+- Delete a user by id
+- Update user details
+- Update user role
+
 <!-- ## API Documentation -->
 
 ## API Root Endpoint
