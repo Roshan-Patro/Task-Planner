@@ -42,13 +42,19 @@ The whole application with all the endpoints is protected and secured with Sprin
 
 ## ER Diagram
 
-## API Documentation
+<!-- ## API Documentation -->
 
 ## API Root Endpoint
+```
+https://localhost:8844/
+```
+```
+http://localhost:8844/swagger-ui/index.html
+```
 
 ## Usage Instructions
 
-## SQL Queries
+<!-- ## SQL Queries -->
 
 ## Feedback
 
