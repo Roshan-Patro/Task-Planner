@@ -43,8 +43,10 @@ The whole application with all the endpoints is protected and secured with Sprin
 - Swagger
 - MySQL
 
-## ER Diagram
-![ER_Diagram_TaskPlanner](https://user-images.githubusercontent.com/107461385/232238989-76b99442-c52b-4cba-b3ce-8a3442c20a15.png)
+## Entity Relationship (ER) Diagram
+<p align="center">
+<img src="https://user-images.githubusercontent.com/107461385/232238989-76b99442-c52b-4cba-b3ce-8a3442c20a15.png">
+</p>
 
 ## Modules and Services
 - User Module
