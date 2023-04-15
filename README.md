@@ -57,6 +57,21 @@ The whole application with all the endpoints is protected and secured with Sprin
 - Update user details
 - Update user role
 
+### Task Module - Services
+- Create a task
+- Assign a task to a user
+- Change the assignee of a task
+- Change the sprint of a task
+- Change the status of a task
+- Change the priority of a task
+- Change the start date of a task
+- Change the end date of a task
+- Change the type of a task
+- Update a task (many attributes at a time)
+- Get all existing tasks
+- Get all existing tasks with pagination
+- Delete a task by id
+
 <!-- ## API Documentation -->
 
 ## API Root Endpoint
