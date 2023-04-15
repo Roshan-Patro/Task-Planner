@@ -47,6 +47,7 @@ The whole application with all the endpoints is protected and secured with Sprin
 <p align="center">
 <img src="https://user-images.githubusercontent.com/107461385/232238989-76b99442-c52b-4cba-b3ce-8a3442c20a15.png">
 </p>
+:bulb: Click on the ER Diagram to open it in a new tab.
 
 ## Modules and Services
 - User Module
@@ -94,6 +95,23 @@ http://localhost:8844/swagger-ui/index.html
 ```
 
 ## Usage Instructions
+- Before running the server, you should update the database configuration details inside the [application.properties](https://github.com/Roshan-Patro/Task-Planner/blob/main/TaskPlanner/src/main/resources/application.properties) file. 
+- Update the port number, username and password as per your local database configuration.
+- The basic details of the application.properties file are given below for reference.
+```
+#Server's the port number (Customized)
+server.port=8844
+
+#Database related properties
+spring.datasource.url=jdbc:mysql://${BD_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:taskplanner}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.username=${DB_USERNAME:root}
+spring.datasource.password=${DB_PASSWORD:Patro@1997}
+
+#ORM s/w specific properties
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+```
 
 <!-- ## SQL Queries -->
 
