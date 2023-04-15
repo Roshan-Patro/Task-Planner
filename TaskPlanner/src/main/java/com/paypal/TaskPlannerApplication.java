@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 				@Server(url = "/", description = "Default Server URL") })
 @SecuritySchemes({ @SecurityScheme(name = "basicAuth", type = SecuritySchemeType.HTTP, scheme = "basic"),
 		@SecurityScheme(name = "bearerToken", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT") })
+
 public class TaskPlannerApplication {
 
 	public static void main(String[] args) {
