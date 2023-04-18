@@ -30,7 +30,7 @@ The whole application with all the endpoints is protected and secured with ***Sp
 ## Project Structure
 ![Task-Planner-Project_Structure](https://user-images.githubusercontent.com/107461385/232118428-feccb72d-0c90-423e-bf9d-b02dc6f3b851.PNG)
 
-## Technologies and Tools Used
+## 🖥️ Technologies and Tools Used
 - Java
 - Spring Framework
 - Spring Boot
