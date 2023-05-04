@@ -22,6 +22,8 @@ import com.paypal.model.Task;
 import com.paypal.model.User;
 import com.paypal.service.TaskService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/taskplanner/task")
 public class TaskController {
@@ -30,7 +32,7 @@ public class TaskController {
 	private TaskService tservice;
 
 	@PostMapping("/create")
-	public ResponseEntity<Task> createTask(@RequestBody CreateTaskDto dto) {
+	public ResponseEntity<Task> createTask(@Valid @RequestBody CreateTaskDto dto) {
 		Task createdTask = tservice.createTask(dto);
 		return new ResponseEntity<Task>(createdTask, HttpStatus.CREATED);
 	}
